@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISO — Wireframe & Build Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#23232A;--mute:#73737F;--faint:#A0A0AC;
+  --bg:#F4F4F6;--panel:#FFFFFF;--line:#E2E2E7;
+  /* wireframe grays */
+  --w-screen:#FFFFFF;--w-frame:#2E2E36;--w-fill:#DDDDE3;--w-fill2:#E9E9EE;
+  --w-textline:#CFCFD6;--w-dash:#B6B6C0;--w-dark:#3C3C45;
+  --accent:#FF8000; /* single muted accent = primary action / highlight */
+  --accentsoft:#FFE8C1;
+  --mvp:#2E7D4F;--v1:#B7791F;--v2:#7A5CC0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+h1,h2,h3{font-family:'Poppins',serif;margin:0;font-weight:600;line-height:1.1}
+.hero{background:#23232A;color:#fff;padding:50px 0 42px}
+.hero .eyebrow{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#F8BD62}
+.hero h1{font-size:38px;margin:10px 0 8px;color:#fff}
+.hero p{margin:0;color:#C5C5CF;font-size:15px;max-width:70ch}
+section{padding:46px 0;border-bottom:1px solid var(--line)}
+.sec-k{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.sec-h{font-size:27px;color:var(--ink);margin:6px 0 6px}
+.sec-d{color:var(--mute);font-size:14.5px;max-width:75ch;margin:0 0 24px}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:5px;color:#fff;vertical-align:middle}
+.tag.mvp{background:var(--mvp)}.tag.v1{background:var(--v1)}.tag.v2{background:var(--v2)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;font-size:12px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+
+/* FEATURE INVENTORY */
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:820px){.feat-grid{grid-template-columns:1fr}}
+.feat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.feat h3{font-size:16px;color:var(--ink);margin-bottom:4px}
+.feat .cat{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.feat ul{margin:0;padding:0;list-style:none}
+.feat li{font-size:13.5px;color:#34343c;padding:5px 0;border-top:1px dashed var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+.feat li:first-child{border-top:none}
+.feat li .nm{flex:1}
+
+/* SCREEN MAP */
+.map{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;overflow-x:auto}
+.map-flow{display:flex;flex-direction:column;gap:8px;min-width:880px}
+.map-row{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.map-lane{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);width:96px;flex:none}
+.node{background:var(--w-fill2);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:11.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+.node.start{background:var(--accentsoft);border-color:#F0C98A;color:#8A4A12}
+.node.dec{background:#FFF6E0;border-color:#EAD9A8;border-radius:9px}
+.node.exit{background:#F1F1F4;color:var(--mute)}
+.arr{color:var(--faint);font-weight:700;font-size:14px;flex:none}
+.maplabel{font-size:10px;color:var(--faint);font-style:italic}
+
+/* WIREFRAMES */
+.wf-group{margin-top:10px}
+.wf-group-h{display:flex;align-items:baseline;gap:10px;margin:26px 0 14px}
+.wf-group-h h3{font-size:19px;color:var(--ink)}
+.wf-group-h .meta{font-size:12px;color:var(--mute)}
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(208px,1fr));gap:26px 22px}
+.wf-item{display:flex;flex-direction:column}
+.wf-phone{width:200px;height:418px;background:var(--w-frame);border-radius:26px;padding:7px;margin:0 auto}
+.wf-screen{background:var(--w-screen);border-radius:20px;height:100%;overflow:hidden;display:flex;flex-direction:column;border:1px solid #15151a}
+.wf-status{height:22px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:8px;color:var(--faint)}
+.wf-status .dots{display:flex;gap:3px}.wf-status .dots i{width:4px;height:4px;border-radius:50%;background:var(--w-textline)}
+.wf-body{flex:1;padding:7px 12px 11px;display:flex;flex-direction:column;overflow:hidden}
+.wf-body.ctr{align-items:center;justify-content:center;text-align:center}
+/* primitives */
+.h{font-size:12px;font-weight:700;color:var(--ink);font-family:'Inter');margin:2px 0}
+.h2{font-size:10px;font-weight:600;color:#44444c}
+.cap{font-size:8.5px;color:var(--faint)}
+.line{height:7px;border-radius:3px;background:var(--w-textline);margin:3px 0}
+.box{background:var(--w-fill);border-radius:7px}
+.box2{background:var(--w-fill2);border:1px solid var(--line);border-radius:7px}
+.img{border:1.5px dashed var(--w-dash);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--w-dash);font-size:9px;position:relative}
+.img::after{content:"";position:absolute;inset:6px;background:linear-gradient(45deg,transparent 48%,var(--w-dash) 48%,var(--w-dash) 52%,transparent 52%)}
+.circ{border-radius:50%;background:var(--w-fill);margin:0 auto}
+.circ.dash{background:none;border:1.5px dashed var(--w-dash)}
+.btn{background:var(--w-dark);color:#fff;border-radius:8px;text-align:center;font-size:9.5px;font-weight:600;padding:8px;margin-top:5px}
+.btn.pri{background:var(--accent)}
+.btn.sec{background:none;border:1px solid var(--w-dash);color:#55555e}
+.input{border:1px solid var(--w-dash);border-radius:8px;padding:7px 9px;font-size:9px;color:var(--faint);margin-bottom:6px;display:flex;justify-content:space-between}
+.chip{display:inline-block;border:1px solid var(--w-dash);border-radius:99px;padding:3px 8px;font-size:8.5px;color:#55555e;margin:0 4px 5px 0}
+.chip.on{background:var(--accentsoft);border-color:#F0C98A;color:#8A4A12}
+.bub{padding:6px 8px;border-radius:9px;font-size:8.5px;max-width:80%;margin-bottom:5px;line-height:1.3}
+.bub.l{background:var(--w-fill2);align-self:flex-start;border-bottom-left-radius:3px;color:#44444c}
+.bub.r{background:var(--accentsoft);align-self:flex-end;border-bottom-right-radius:3px;color:#8A4A12}
+.toprow{display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.sp{flex:1}
+.ring{width:84px;height:84px;border-radius:50%;border:5px solid var(--w-fill);border-top-color:var(--accent);margin:6px auto}
+.timer{height:5px;background:var(--w-fill);border-radius:99px;overflow:hidden;margin:5px 0}
+.timer>i{display:block;height:100%;width:62%;background:var(--accent)}
+.tray{display:flex;gap:4px;margin-top:5px}
+.tray div{flex:1;background:var(--w-fill2);border:1px solid var(--line);border-radius:6px;text-align:center;font-size:8px;color:#55555e;padding:5px 2px}
+.tabbar{display:flex;justify-content:space-around;border-top:1px solid var(--line);padding-top:6px;margin-top:5px}
+.tabbar div{width:18px;height:14px;border-radius:4px;background:var(--w-fill)}
+.tabbar div.on{background:var(--accent)}
+.compose{display:flex;gap:5px;align-items:center;margin-top:5px}
+.compose .ib{flex:1;border:1px solid var(--w-dash);border-radius:8px;padding:6px;font-size:8px;color:var(--faint)}
+.compose .sb{width:24px;height:24px;border-radius:50%;background:var(--accent)}
+.prog{height:4px;background:var(--w-fill);border-radius:99px;overflow:hidden;margin-bottom:8px}
+.prog>i{display:block;height:100%;background:var(--accent)}
+.badge{position:absolute;top:6px;right:8px;font-size:7px;font-weight:700;color:var(--accent)}
+/* caption under each wireframe */
+.wf-cap{margin-top:12px}
+.wf-cap .num{font-size:10px;font-weight:700;color:var(--accent)}
+.wf-cap .name{font-size:13.5px;font-weight:700;color:var(--ink);font-family:'Poppins'}
+.wf-cap .el{font-size:11px;color:var(--mute);margin-top:3px;line-height:1.45}
+
+/* LAYOUT VARIANTS */
+.variants{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.variants{grid-template-columns:1fr}}
+.variant{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+.variant.rec{border:2px solid var(--accent)}
+.variant .opt{font-family:'Poppins';font-size:15px;color:var(--ink);margin-top:12px}
+.variant .why{font-size:11.5px;color:var(--mute);margin-top:5px;text-align:left}
+.recflag{display:inline-block;background:var(--accent);color:#fff;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:8px}
+.vphone{width:172px;height:340px;background:var(--w-frame);border-radius:22px;padding:6px;margin:0 auto}
+.vphone .wf-screen{border-radius:17px}
+.howto{background:#23232A;color:#D5D5DD;border-radius:14px;padding:22px 24px;font-size:13.5px;line-height:1.6}
+.howto b{color:#fff}
+.foot{text-align:center;color:var(--faint);font-size:12px;padding:30px 0}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">ISO · Lo-Fi Wireframe & Build Kit</div>
+  <h1>Everything you need to build the hi-fi mockups</h1>
+  <p>A complete blueprint: the feature inventory, a screen map showing how everything connects, grayscale lo-fi wireframes of every screen with their key elements listed, and layout alternatives for the screens worth exploring. Build hi-fi directly on top of these.</p>
+</div></header>
+
+<!-- 1. FEATURE INVENTORY -->
+<section><div class="wrap">
+  <div class="sec-k">01 · Feature Inventory</div>
+  <h2 class="sec-h">What the product does</h2>
+  <p class="sec-d">Every feature, grouped by area and tagged by release phase. Use this as the checklist behind the screens.</p>
+  <div class="legend">
+    <span><span class="tag mvp">MVP</span> launch-critical</span>
+    <span><span class="tag v1">V1</span> monetize &amp; retain</span>
+    <span><span class="tag v2">V2</span> deepen &amp; expand</span>
+  </div>
+  <div class="feat-grid">
+    <div class="feat"><div class="cat">A · Onboarding &amp; Identity</div><h3>Get verified, set intent</h3><ul>
+      <li><span class="nm">Phone / email sign-up</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">.edu email verification (code)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Photo / liveness verification</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Profile basics (name, age, gender, photos)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Conversation prompts</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Match preferences (interested-in, age, distance)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Location &amp; notification permissions</span><span class="tag mvp">MVP</span></li>
+    </ul></div>
+
+    <div class="feat"><div class="cat">B · Matchmaking &amp; Presence</div><h3>Live, one-at-a-time matching</h3><ul>
+      <li><span class="nm">Enter live queue</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Presence-based matching (online now)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Campus / proximity matching</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Preference filtering</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Match reveal + shared ice-breaker</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Leave queue / re-queue</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Background queue + match alerts</span><span class="tag v1">V1</span></li>
+    </ul></div>
+
+    <div class="feat"><div class="cat">C · Live Conversation</div><h3>Present, real-time talk</h3><ul>
+      <li><span class="nm">Real-time messaging room</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Per-turn reply timer</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Typing &amp; presence cues</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Ice-breaker prompts</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Reply-timeout handling</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Live prompts (song / photo / date)</span><span class="tag v2">V2</span></li>
+      <li><span class="nm">Optional live audio / video</span><span class="tag v2">V2</span></li>
+    </ul></div>
+
+    <div class="feat"><div class="cat">D · Continuity &amp; Exclusivity</div><h3>The one-chat rule</h3><ul>
+      <li><span class="nm">Mutual “keep talking?” decision</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">One ongoing chat (single active)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">One-at-a-time enforcement (close to start new)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Profile peek</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Chat history</span><span class="tag v1">V1</span></li>
+      <li><span class="nm">Date planner</span><span class="tag v2">V2</span></li>
+    </ul></div>
+
+    <div class="feat"><div class="cat">E · ISO+ Premium</div><h3>Convenience &amp; expression</h3><ul>
+      <li><span class="nm">Subscription paywall</span><span class="tag v1">V1</span></li>
+      <li><span class="nm">Background queue (queue &amp; leave app)</span><span class="tag v1">V1</span></li>
+      <li><span class="nm">Chat history access</span><span class="tag v1">V1</span></li>
+      <li><span class="nm">Live prompts &amp; activities</span><span class="tag v2">V2</span></li>
+      <li><span class="nm">Date planner + calendar</span><span class="tag v2">V2</span></li>
+      <li><span class="nm">Subscription management</span><span class="tag v1">V1</span></li>
+    </ul></div>
+
+    <div class="feat"><div class="cat">F · Safety, Account &amp; Settings</div><h3>Trust by default</h3><ul>
+      <li><span class="nm">Report / block (instant, private)</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Safety center / guidelines</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Verification badges</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Edit profile &amp; prompts</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Notification settings</span><span class="tag mvp">MVP</span></li>
+      <li><span class="nm">Privacy controls (who can match)</span><span class="tag v1">V1</span></li>
+    </ul></div>
+  </div>
+</div></section>
+
+<!-- 2. SCREEN MAP -->
+<section><div class="wrap">
+  <div class="sec-k">02 · Screen Map</div>
+  <h2 class="sec-h">How the screens connect</h2>
+  <p class="sec-d">The information architecture and primary navigation. Onboarding is a one-time linear flow; the app then runs the core loop from a simple tabbed shell.</p>
+  <div class="map"><div class="map-flow">
+    <div class="map-row"><div class="map-lane">Onboarding</div>
+      <div class="node start">1 Splash</div><span class="arr">→</span>
+      <div class="node">2 Sign up</div><span class="arr">→</span>
+      <div class="node">3 .edu verify</div><span class="arr">→</span>
+      <div class="node">4 Photo verify</div><span class="arr">→</span>
+      <div class="node">5 Profile</div><span class="arr">→</span>
+      <div class="node">6 Prompts</div><span class="arr">→</span>
+      <div class="node">7 Preferences</div><span class="arr">→</span>
+      <div class="node">8 Permissions</div>
+    </div>
+    <div class="map-row"><div class="map-lane">Core loop</div>
+      <div class="node start">9 Home / Queue</div><span class="arr">→</span>
+      <div class="node">10 Searching</div><span class="arr">→</span>
+      <div class="node">11 Match found</div><span class="arr">→</span>
+      <div class="node">12 Live room</div><span class="arr">→</span>
+      <div class="node dec">13 Keep talking?</div><span class="arr">→</span>
+      <div class="node">15 One chat</div>
+    </div>
+    <div class="map-row"><div class="map-lane"></div>
+      <span class="maplabel" style="margin-left:106px">13 → No → </span>
+      <div class="node exit">14 Closed / re-queue</div>
+      <span class="arr">→</span><div class="node start">back to 9</div>
+      <span class="maplabel">· 15 → “talk to someone new” → 16 Close confirm → back to 9</span>
+    </div>
+    <div class="map-row"><div class="map-lane">Premium</div>
+      <div class="node">17 ISO+ paywall</div><span class="arr">→</span>
+      <div class="node">18 Background queue</div><span class="arr">→</span>
+      <div class="node">19 Match-ready push</div>
+      <span class="maplabel" style="margin-left:8px">· 20 Chat history · 21 Live prompts · 22 Date planner</span>
+    </div>
+    <div class="map-row"><div class="map-lane">Safety / Acct</div>
+      <div class="node">23 Report / block</div>
+      <div class="node">24 Safety center</div>
+      <div class="node">25 Settings</div>
+      <div class="node">26 Edit profile</div>
+      <div class="node">27 Subscription</div>
+      <span class="maplabel">reachable from the ⋯ menu &amp; profile tab</span>
+    </div>
+  </div></div>
+  <p class="sec-d" style="margin-top:14px"><b>Tab shell:</b> the live app has three tabs — <b>Queue</b> (home), <b>Chat</b> (your one connection, if any), and <b>Profile</b> (settings, ISO+, safety). There is intentionally no “matches” or “inbox” tab — that’s the whole point.</p>
+</div></section>
+
+<!-- 3. WIREFRAMES -->
+<section><div class="wrap">
+  <div class="sec-k">03 · Lo-Fi Wireframes</div>
+  <h2 class="sec-h">Every screen, blueprinted</h2>
+  <p class="sec-d">Grayscale on purpose — these define structure and content, not color. The single blue accent marks the primary action / live element so you can see hierarchy. Each caption lists the key elements to build in hi-fi.</p>
+
+  <!-- ONBOARDING -->
+  <div class="wf-group-h"><h3>A · Onboarding</h3><span class="meta">one-time linear flow · screens 1–8</span></div>
+  <div class="wf-grid">
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="wf-body ctr">
+        <div class="circ dash" style="width:54px;height:54px"></div>
+        <div class="h" style="font-size:18px;margin-top:14px">ISO</div>
+        <div class="cap" style="margin-top:2px">Intimate Setting Online</div>
+        <div class="h" style="font-size:13px;margin-top:18px">One conversation<br>at a time.</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Get started</div>
+        <div class="btn sec" style="width:100%">I have an account</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">01</div><div class="name">Splash</div><div class="el">Logo, tagline, primary CTA, secondary sign-in.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="wf-body">
+        <div class="prog"><i style="width:14%"></i></div>
+        <div class="h">Create your account</div>
+        <div class="cap" style="margin-bottom:10px">We’ll text a code to verify.</div>
+        <div class="input"><span>Phone or email</span></div>
+        <div class="input"><span>···· verification code</span></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Continue</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">02</div><div class="name">Sign up</div><div class="el">Phone/email field, OTP code, continue. Legal/ToS line.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>1/4</span></div>
+      <div class="wf-body">
+        <div class="prog"><i style="width:25%"></i></div>
+        <div class="h">Verify you’re a real student</div>
+        <div class="cap" style="margin-bottom:10px">A small, trusted room.</div>
+        <div class="input"><span>name@university.edu</span><span>✓</span></div>
+        <div class="input"><span>Enter 6-digit code</span></div>
+        <div class="box2" style="padding:8px;font-size:8.5px;color:#55555e">🎓 .edu domains only — bounds the trust circle.</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Verify</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">03</div><div class="name">.edu verification</div><div class="el">.edu email entry, code input, trust note, verify CTA.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>2/4</span></div>
+      <div class="wf-body ctr">
+        <div class="prog" style="width:100%"><i style="width:50%"></i></div>
+        <div class="h">Photo verification</div>
+        <div class="cap" style="margin-bottom:10px">Match the pose to prove it’s you.</div>
+        <div class="img" style="width:110px;height:130px;margin:0 auto">selfie</div>
+        <div class="cap" style="margin-top:8px">Private · only used to verify.</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Take selfie</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">04</div><div class="name">Photo / liveness</div><div class="el">Camera frame, pose guide, privacy note, capture CTA.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>3/4</span></div>
+      <div class="wf-body">
+        <div class="prog"><i style="width:62%"></i></div>
+        <div class="h">The basics</div>
+        <div style="display:flex;gap:6px;margin:6px 0"><div class="img" style="flex:1;height:46px">+</div><div class="img" style="flex:1;height:46px">+</div><div class="img" style="flex:1;height:46px">+</div></div>
+        <div class="input"><span>First name</span></div>
+        <div class="input"><span>Age</span></div>
+        <div class="input"><span>Gender</span><span>▾</span></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Next</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">05</div><div class="name">Profile basics</div><div class="el">Photo uploads, name, age, gender. Photos are lighter than incumbents — conversation-first.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>3/4</span></div>
+      <div class="wf-body">
+        <div class="prog"><i style="width:72%"></i></div>
+        <div class="h">A few prompts</div>
+        <div class="cap" style="margin-bottom:8px">Not a résumé — talking points.</div>
+        <div class="box2" style="padding:8px;margin-bottom:6px"><div class="cap" style="color:var(--accent)">Ideal first conversation</div><div class="line" style="width:80%"></div></div>
+        <div class="box2" style="padding:8px;margin-bottom:6px"><div class="cap" style="color:var(--accent)">I’m looking for</div><div class="line" style="width:70%"></div></div>
+        <div class="box2" style="padding:8px"><div class="cap" style="color:var(--accent)">Two truths &amp; a lie</div><div class="line" style="width:85%"></div></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Next</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">06</div><div class="name">Prompts</div><div class="el">3 editable prompt cards (label + answer). Seed the first ice-breaker.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>4/4</span></div>
+      <div class="wf-body">
+        <div class="prog"><i style="width:90%"></i></div>
+        <div class="h">Who should we match you with?</div>
+        <div class="cap" style="margin:6px 0">Interested in</div>
+        <span class="chip">Women</span><span class="chip on">Men</span><span class="chip">Everyone</span>
+        <div class="cap" style="margin:8px 0 4px">Age range</div>
+        <span class="chip">18–22</span><span class="chip on">21–26</span><span class="chip">24–30</span>
+        <div class="cap" style="margin:8px 0 4px">Distance</div>
+        <span class="chip on">My campus</span><span class="chip">≤ 10 mi</span><span class="chip">My city</span>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Next</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">07</div><div class="name">Preferences</div><div class="el">Interested-in, age range, distance — chip selectors feeding the matcher.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div>
+      <div class="wf-body ctr">
+        <div class="circ" style="width:46px;height:46px"></div>
+        <div class="h" style="margin-top:12px">Allow a few things</div>
+        <div class="box2" style="padding:9px;margin-top:10px;width:100%;text-align:left;font-size:9px;color:#55555e">📍 Location — to match nearby</div>
+        <div class="box2" style="padding:9px;margin-top:6px;width:100%;text-align:left;font-size:9px;color:#55555e">🔔 Notifications — when a match is live</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Enable &amp; finish</div>
+        <div class="cap" style="margin-top:6px">You’re in →</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">08</div><div class="name">Permissions</div><div class="el">Location + notification opt-in with rationale, finish CTA → Home.</div></div></div>
+  </div>
+
+  <!-- CORE LOOP -->
+  <div class="wf-group-h"><h3>B · The core loop</h3><span class="meta">the signature experience · screens 9–16</span></div>
+  <div class="wf-grid">
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>ISO</span></div>
+      <div class="wf-body ctr">
+        <span class="chip on" style="margin-bottom:8px">● 1,204 online nearby</span>
+        <div class="h" style="font-size:15px">Ready to meet someone?</div>
+        <div class="cap" style="margin:6px 0">One person, online now. No swiping.</div>
+        <div class="circ" style="width:40px;height:40px;margin-top:12px"></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Enter the queue</div>
+        <div class="btn sec" style="width:100%">✨ Background queue (ISO+)</div>
+        <div class="tabbar"><div class="on"></div><div></div><div></div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">09</div><div class="name">Home / Queue</div><div class="el">Online-count badge, single primary CTA, ISO+ upsell, tab bar. <b>No feed.</b></div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>Finding…</span></div>
+      <div class="wf-body ctr">
+        <div class="cap" style="color:var(--accent)">LIVE MATCHMAKING</div>
+        <div class="ring"></div>
+        <div class="cap">scanning campus…</div>
+        <div class="h" style="font-size:13px;margin-top:10px">Finding someone who’s here now</div>
+        <div class="line" style="width:70%;margin:8px auto"></div>
+        <div class="sp"></div>
+        <div class="btn sec" style="width:100%">Leave the queue</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">10</div><div class="name">Searching</div><div class="el">Animated matchmaking ring, status text, leave-queue. (Edge: 14 = no-match retry.)</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div>
+      <div class="wf-body ctr">
+        <div class="cap" style="color:var(--accent)">IT’S A MATCH — LIVE NOW</div>
+        <div class="circ" style="width:60px;height:60px;margin-top:10px"></div>
+        <div class="h" style="margin-top:10px">Maya, 21</div>
+        <div class="cap">online now · 0.4 mi</div>
+        <div class="box2" style="padding:8px;margin-top:10px;width:100%;text-align:left"><div class="cap" style="color:var(--accent)">Shared ice-breaker</div><div class="line" style="width:90%"></div></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Say hi →</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">11</div><div class="name">Match found</div><div class="el">Avatar, name/age, presence + distance, shared ice-breaker card, enter-room CTA.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:42</span><span style="color:var(--accent)">● LIVE</span></div>
+      <div class="wf-body">
+        <div class="toprow"><div class="circ" style="width:24px;height:24px;margin:0"></div><div><div class="h2">Maya, 21</div><div class="cap" style="color:var(--accent)">● here now</div></div><div class="sp"></div><div class="cap">⋯</div></div>
+        <div class="cap" style="color:var(--accent)">⏱ reply 1:02</div><div class="timer"><i></i></div>
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="bub l">2am food? this is important 👀</div>
+          <div class="bub r">cheese quesadilla 🫡</div>
+          <div class="bub l">a power move honestly</div>
+        </div>
+        <div class="tray"><div>🎵</div><div>📷</div><div>📅</div></div>
+        <div class="compose"><div class="ib">Message…</div><div class="sb"></div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">12</div><div class="name">Live room</div><div class="el">Header w/ presence, reply-timer bar, message thread, prompt tray, composer. (Edges: 12a timeout warning, 12b peer left.)</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span></span></div>
+      <div class="wf-body ctr">
+        <div class="circ" style="width:40px;height:40px"></div>
+        <div class="h" style="margin-top:12px">That was a good one.</div>
+        <div class="cap" style="margin:6px 0">Keep this as your one ongoing chat?</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Yes — keep talking</div>
+        <div class="btn sec" style="width:100%">No, back to queue</div>
+        <div class="cap" style="margin-top:6px">Both of you have to say yes.</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">13</div><div class="name">Keep talking?</div><div class="el">Session-end moment, mutual yes/no, “both must agree” note. (14 = waiting for peer.)</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span></span></div>
+      <div class="wf-body ctr">
+        <div class="h" style="font-size:22px;color:var(--faint);margin-top:30px">🌿</div>
+        <div class="h" style="margin-top:8px">No worries — that happens</div>
+        <div class="cap" style="margin:6px 0">No dead chat left behind.</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Find someone new</div>
+        <div class="btn sec" style="width:100%">Take a break</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">14</div><div class="name">Closed / re-queue</div><div class="el">Graceful exit after decline/timeout, re-queue or break. No graveyard inbox.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span>ISO</span></div>
+      <div class="wf-body">
+        <div style="text-align:center"><span class="chip on">Your one connection</span></div>
+        <div class="toprow" style="margin-top:6px"><div class="circ" style="width:24px;height:24px;margin:0"></div><div><div class="h2">Maya</div><div class="cap">you both said yes 🎉</div></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="bub l">coffee thurs?</div>
+          <div class="bub r">yes — you pick the spot</div>
+        </div>
+        <div class="box2" style="padding:7px;font-size:8px;color:#55555e;display:flex;gap:6px;align-items:center">🔒 Talk to someone new? <span class="sp"></span>›</div>
+        <div class="compose"><div class="ib">Message Maya…</div><div class="sb"></div></div>
+        <div class="tabbar"><div></div><div class="on"></div><div></div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">15</div><div class="name">One ongoing chat</div><div class="el">“One connection” banner, thread, locked “talk to someone new” row, composer, Chat tab active.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:49</span><span></span></div>
+      <div class="wf-body ctr">
+        <div class="h" style="font-size:20px;margin-top:26px">🔒</div>
+        <div class="h" style="margin-top:8px">Close your chat with Maya?</div>
+        <div class="cap" style="margin:6px 0">ISO keeps you to one at a time. To meet someone new, you’ll end this.</div>
+        <div class="sp"></div>
+        <div class="btn sec" style="width:100%">Keep talking to Maya</div>
+        <div class="btn" style="width:100%;background:#8a4a4a">Close &amp; re-enter queue</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">16</div><div class="name">Close confirmation</div><div class="el">Exclusivity guardrail — confirm before closing the one chat to re-queue.</div></div></div>
+  </div>
+
+  <!-- PREMIUM + SAFETY -->
+  <div class="wf-group-h"><h3>C · ISO+, safety &amp; account</h3><span class="meta">screens 17–27</span></div>
+  <div class="wf-grid">
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>ISO+</span></div>
+      <div class="wf-body">
+        <div class="h" style="text-align:center;font-size:16px">ISO+</div>
+        <div class="cap" style="text-align:center;margin-bottom:10px">Date on your schedule.</div>
+        <div class="box2" style="padding:8px;margin-bottom:6px;font-size:8.5px;color:#55555e">🌙 Background queue</div>
+        <div class="box2" style="padding:8px;margin-bottom:6px;font-size:8.5px;color:#55555e">🕰️ Chat history</div>
+        <div class="box2" style="padding:8px;font-size:8.5px;color:#55555e">🎵 Live prompts &amp; date planner</div>
+        <div class="cap" style="text-align:center;margin-top:8px">No pay-to-win, ever.</div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Try ISO+ · $14.99/mo</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">17</div><div class="name">ISO+ paywall</div><div class="el">Benefit rows, anti-pay-to-win note, price CTA, restore/maybe-later.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>ISO+</span></div>
+      <div class="wf-body ctr">
+        <div class="ring" style="border-top-color:var(--accent)"></div>
+        <div class="h" style="font-size:13px;margin-top:8px">Queued in the background</div>
+        <div class="cap" style="margin:6px 0">Close the app — we’ll ping you when a match is live.</div>
+        <div class="sp"></div>
+        <div class="btn sec" style="width:100%">Pause background queue</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">18</div><div class="name">Background queue</div><div class="el">Active-state confirmation, ability to pause. ISO+ only.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen" style="background:#1f1f25"><div class="wf-status"><span style="color:#aaa">9:41</span><span></span></div>
+      <div class="wf-body" style="justify-content:flex-start">
+        <div class="box2" style="background:#2c2c34;border-color:#3a3a44;padding:10px;margin-top:8px;display:flex;gap:8px;align-items:center"><div class="circ" style="width:22px;height:22px;background:#44444e;margin:0"></div><div><div class="h2" style="color:#fff">ISO</div><div class="cap" style="color:#b8b8c2">Someone’s ready to talk — they’re here now. Tap to meet them.</div></div></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Open &amp; say hi</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">19</div><div class="name">Match-ready push</div><div class="el">Lock-screen / in-app notification → deep link into the live room.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span>ISO+</span></div>
+      <div class="wf-body">
+        <div class="h">Chat history</div>
+        <div class="cap" style="margin-bottom:8px">Past conversations.</div>
+        <div class="box2" style="padding:8px;margin-bottom:5px;display:flex;gap:7px;align-items:center"><div class="circ" style="width:20px;height:20px;margin:0"></div><div class="line" style="width:50%;margin:0"></div></div>
+        <div class="box2" style="padding:8px;margin-bottom:5px;display:flex;gap:7px;align-items:center"><div class="circ" style="width:20px;height:20px;margin:0"></div><div class="line" style="width:62%;margin:0"></div></div>
+        <div class="box2" style="padding:8px;display:flex;gap:7px;align-items:center"><div class="circ" style="width:20px;height:20px;margin:0"></div><div class="line" style="width:44%;margin:0"></div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">20</div><div class="name">Chat history</div><div class="el">List of past connections (ISO+). Tap → read-only transcript.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:50</span><span>ISO+</span></div>
+      <div class="wf-body">
+        <div class="toprow"><div class="circ" style="width:22px;height:22px;margin:0"></div><div class="h2">Maya</div></div>
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="bub r" style="background:var(--w-fill2)">🎵 song request</div>
+          <div class="bub l">▶ a track…</div>
+          <div class="bub r">📷 photo of your day?</div>
+        </div>
+        <div class="tray"><div>🎵 Song</div><div>📷 Photo</div><div>📅 Plan</div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">21</div><div class="name">Live prompts</div><div class="el">Prompt tray expands into song / photo / plan actions inside the chat. ISO+.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:52</span><span>ISO+</span></div>
+      <div class="wf-body">
+        <div class="h">Plan it together</div>
+        <div class="cap" style="margin-bottom:8px">Date planner</div>
+        <div class="box2" style="padding:8px;margin-bottom:5px"><div class="cap" style="color:var(--accent)">When</div><div class="line" style="width:50%"></div></div>
+        <div class="box2" style="padding:8px;margin-bottom:5px"><div class="cap" style="color:var(--accent)">Where (suggested)</div><div class="line" style="width:70%"></div></div>
+        <div class="box2" style="padding:8px"><div class="cap" style="color:var(--accent)">Status</div><div class="line" style="width:40%"></div></div>
+        <div class="sp"></div>
+        <div class="btn pri" style="width:100%">Add to calendar</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">22</div><div class="name">Date planner</div><div class="el">When / where (venue suggestion) / accept status / calendar add. ISO+.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:44</span><span></span></div>
+      <div class="wf-body">
+        <div class="h">Keep ISO safe</div>
+        <div class="cap" style="margin-bottom:10px">Private — they’re never told.</div>
+        <div class="box2" style="padding:9px;margin-bottom:6px;font-size:9px;color:#55555e">🚩 Report a problem</div>
+        <div class="box2" style="padding:9px;margin-bottom:6px;font-size:9px;color:#55555e">🚫 Block &amp; end chat</div>
+        <div class="box2" style="padding:9px;font-size:9px;color:#55555e">🔕 Mute notifications</div>
+        <div class="sp"></div>
+        <div class="btn sec" style="width:100%">Cancel</div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">23</div><div class="name">Report / block</div><div class="el">Bottom sheet: report (reason picker), block, mute. Instant + private.</div></div></div>
+
+    <div class="wf-item"><div class="wf-phone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div>
+      <div class="wf-body">
+        <div class="h">Profile</div>
+        <div class="circ" style="width:46px;height:46px;margin:8px auto"></div>
+        <div class="line" style="width:40%;margin:0 auto 12px"></div>
+        <div class="box2" style="padding:9px;margin-bottom:5px;font-size:9px;color:#55555e">Edit profile &amp; prompts ›</div>
+        <div class="box2" style="padding:9px;margin-bottom:5px;font-size:9px;color:#55555e">ISO+ subscription ›</div>
+        <div class="box2" style="padding:9px;margin-bottom:5px;font-size:9px;color:#55555e">Safety center ›</div>
+        <div class="box2" style="padding:9px;font-size:9px;color:#55555e">Notifications &amp; settings ›</div>
+        <div class="tabbar"><div></div><div></div><div class="on"></div></div>
+      </div></div></div>
+      <div class="wf-cap"><div class="num">24–27</div><div class="name">Profile &amp; settings hub</div><div class="el">Entry to edit profile, subscription, safety center, settings. Profile tab.</div></div></div>
+  </div>
+</div></section>
+
+<!-- 4. LAYOUT VARIANTS -->
+<section><div class="wrap">
+  <div class="sec-k">04 · Layout Explorations</div>
+  <h2 class="sec-h">Alternatives worth testing</h2>
+  <p class="sec-d">For the three highest-stakes screens, here are layout options to prototype in hi-fi and A/B. Recommended option highlighted.</p>
+
+  <h3 style="font-size:18px;color:var(--ink);margin:18px 0 12px">Home / Queue</h3>
+  <div class="variants">
+    <div class="variant rec">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div><div class="wf-body ctr"><span class="chip on">● online nearby</span><div class="h" style="margin-top:8px">Ready?</div><div class="circ" style="width:34px;height:34px;margin-top:10px"></div><div class="sp"></div><div class="btn pri" style="width:100%">Enter queue</div></div></div></div>
+      <div class="opt">A · Single focal CTA</div>
+      <div class="why">One action, zero distraction. Reinforces “no feed.” Cleanest expression of the brand.</div>
+      <div class="recflag">Recommended</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div><div class="wf-body"><div class="h2">Online near you</div><div style="display:flex;gap:4px;margin:6px 0"><div class="circ" style="width:22px;height:22px;margin:0"></div><div class="circ" style="width:22px;height:22px;margin:0"></div><div class="circ" style="width:22px;height:22px;margin:0"></div><div class="circ" style="width:22px;height:22px;margin:0"></div></div><div class="line" style="width:70%"></div><div class="sp"></div><div class="btn pri" style="width:100%">Enter queue</div></div></div></div>
+      <div class="opt">B · CTA + “who’s online”</div>
+      <div class="why">Shows live density to build confidence/FOMO. Risk: edges toward a browsable roster.</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:41</span><span></span></div><div class="wf-body"><div class="box2" style="padding:8px"><div class="cap">tonight’s stats</div><div class="line" style="width:50%"></div></div><div class="box2" style="padding:8px;margin-top:6px"><div class="cap">prime time 9pm</div></div><div class="sp"></div><div class="btn pri" style="width:100%">Enter queue</div></div></div></div>
+      <div class="opt">C · CTA + activity / events</div>
+      <div class="why">Surfaces prime-time events &amp; your stats. Good for retention; more to design &amp; maintain.</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;color:var(--ink);margin:26px 0 12px">Live room — timer placement</h3>
+  <div class="variants">
+    <div class="variant rec">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:42</span><span style="color:var(--accent)">●</span></div><div class="wf-body"><div class="toprow"><div class="circ" style="width:18px;height:18px;margin:0"></div><div class="h2">Maya</div></div><div class="cap" style="color:var(--accent)">⏱ 1:02</div><div class="timer"><i></i></div><div style="flex:1"><div class="bub l">hey</div><div class="bub r">hi 👋</div></div><div class="compose"><div class="ib">…</div><div class="sb"></div></div></div></div></div>
+      <div class="opt">A · Timer under header</div>
+      <div class="why">Always visible, doesn’t crowd the composer. Reads as a calm status, not a countdown bomb.</div>
+      <div class="recflag">Recommended</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:42</span><span style="color:var(--accent)">●</span></div><div class="wf-body"><div class="toprow"><div class="circ" style="width:18px;height:18px;margin:0"></div><div class="h2">Maya</div></div><div style="flex:1"><div class="bub l">hey</div><div class="bub r">hi 👋</div></div><div class="cap" style="color:var(--accent)">⏱ reply 1:02</div><div class="timer"><i></i></div><div class="compose"><div class="ib">…</div><div class="sb"></div></div></div></div></div>
+      <div class="opt">B · Timer above composer</div>
+      <div class="why">Closest to the action when it’s your turn. Risk: feels higher-pressure / urgent.</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:42</span><span style="color:var(--accent)">●</span></div><div class="wf-body"><div class="toprow"><div class="circ" style="width:18px;height:18px;margin:0"></div><div class="h2">Maya</div><div class="sp"></div><div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--accent)"></div></div><div style="flex:1"><div class="bub l">hey</div><div class="bub r">hi 👋</div></div><div class="compose"><div class="ib">…</div><div class="sb"></div></div></div></div></div>
+      <div class="opt">C · Ring in header</div>
+      <div class="why">A small circular countdown by the avatar. Subtle &amp; space-efficient; less legible at a glance.</div>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;color:var(--ink);margin:26px 0 12px">“Keep talking?” moment</h3>
+  <div class="variants">
+    <div class="variant rec">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span></span></div><div class="wf-body ctr"><div class="circ" style="width:30px;height:30px"></div><div class="h" style="margin-top:8px">Good one.</div><div class="cap">Keep going?</div><div class="sp"></div><div class="btn pri" style="width:100%">Yes</div><div class="btn sec" style="width:100%">No</div></div></div></div>
+      <div class="opt">A · Dedicated full screen</div>
+      <div class="why">Gives the decision weight &amp; ceremony. On-brand; impossible to do by accident.</div>
+      <div class="recflag">Recommended</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span></span></div><div class="wf-body"><div class="toprow"><div class="circ" style="width:18px;height:18px;margin:0"></div><div class="h2">Maya</div></div><div style="flex:1"><div class="bub l">that was fun</div></div><div class="box2" style="padding:8px;text-align:center"><div class="cap">Keep talking?</div><div style="display:flex;gap:5px;margin-top:5px"><div class="btn sec" style="flex:1;margin:0">No</div><div class="btn pri" style="flex:1;margin:0">Yes</div></div></div></div></div></div>
+      <div class="opt">B · Inline bar in chat</div>
+      <div class="why">Keeps chat context; fewer screens. Risk: easy to tap mindlessly; undersells the moment.</div>
+    </div>
+    <div class="variant">
+      <div class="vphone"><div class="wf-screen"><div class="wf-status"><span>9:48</span><span></span></div><div class="wf-body" style="position:relative"><div style="flex:1;opacity:.4"><div class="bub l">that was fun</div></div><div class="box2" style="position:absolute;left:10px;right:10px;bottom:10px;padding:10px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.12)"><div class="cap">Keep talking?</div><div class="btn pri" style="width:100%;margin-top:5px">Yes</div><div class="btn sec" style="width:100%">No</div></div></div></div></div>
+      <div class="opt">C · Card overlay</div>
+      <div class="why">Modal over a dimmed chat — middle ground. Focuses attention while keeping context visible.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- HOW TO USE -->
+<section><div class="wrap">
+  <div class="sec-k">05 · How to use this kit</div>
+  <h2 class="sec-h">From here to hi-fi</h2>
+  <div class="howto">
+    <b>1.</b> Pull the <b>feature inventory</b> into your backlog, filtering by MVP first.<br>
+    <b>2.</b> Recreate the <b>screen map</b> as your Figma page structure / flow.<br>
+    <b>3.</b> Build each <b>wireframe</b> at hi-fi using the candlelit design system (plum / ember / amber, Fraunces + Inter) — the element list in each caption is your spec.<br>
+    <b>4.</b> Prototype the <b>layout variants</b> for Home, Live room, and Keep-talking, and validate the recommended options.<br>
+    <b>5.</b> Reference <code>ISO_Brand_and_UX.html</code>, <code>ISO_HiFi_Mockups.html</code>, and <code>ISO_Prototype.html</code> for the hi-fi target.
+  </div>
+</div></section>
+
+<div class="foot">ISO — Intimate Setting Online · Lo-Fi Wireframe &amp; Build Kit · June 2026</div>
+</body>
+</html>
