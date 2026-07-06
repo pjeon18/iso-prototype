@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../../components/Modal";
+import { Icon, type IconName } from "../../components/icons";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 
 /**
@@ -26,19 +27,19 @@ export function LivePromptsTray() {
   return (
     <>
       <div className="flex gap-2 px-4 pb-2 flex-none">
-        <TrayBtn label="🎵 Song" onClick={gate(() => sendMessage("🎵 song request: play me the song you've had on repeat"))} plus={!isPlus} />
-        <TrayBtn label="📷 Photo" onClick={gate(() => sendMessage("📷 photo of your day — go"))} plus={!isPlus} />
-        <TrayBtn label="📅 Plan" onClick={gate(() => setPlannerOpen(true))} plus={!isPlus} />
+        <TrayBtn icon="music" label="Song" onClick={gate(() => sendMessage("song request: play me the song you've had on repeat"))} plus={!isPlus} />
+        <TrayBtn icon="camera" label="Photo" onClick={gate(() => sendMessage("photo of your day — go"))} plus={!isPlus} />
+        <TrayBtn icon="calendar" label="Plan" onClick={gate(() => setPlannerOpen(true))} plus={!isPlus} />
       </div>
-      <DatePlannerSheet open={plannerOpen} onClose={() => setPlannerOpen(false)} onPlanned={() => toast("Date planned 🎉 — now go actually meet.")} />
+      <DatePlannerSheet open={plannerOpen} onClose={() => setPlannerOpen(false)} onPlanned={() => toast("Date planned — now go actually meet.")} />
     </>
   );
 }
 
-function TrayBtn({ label, onClick, plus }: { label: string; onClick: () => void; plus: boolean }) {
+function TrayBtn({ icon, label, onClick, plus }: { icon: IconName; label: string; onClick: () => void; plus: boolean }) {
   return (
     <button
-      className="flex-1 rounded-card border px-2 py-2 text-[12px] font-medium cursor-pointer relative"
+      className="flex-1 rounded-card border px-2 py-2 text-[12px] font-medium cursor-pointer relative flex items-center justify-center gap-1.5"
       style={{
         background: "var(--iso-surface)",
         borderColor: "rgba(90,52,24,0.12)",
@@ -47,6 +48,7 @@ function TrayBtn({ label, onClick, plus }: { label: string; onClick: () => void;
       }}
       onClick={onClick}
     >
+      <Icon name={icon} size={15} color="var(--iso-text-2)" />
       {label}
       {plus && (
         <span
@@ -110,7 +112,7 @@ function DatePlannerSheet({
         <button
           className="btn btn-pri mt-2"
           onClick={() => {
-            sendMessage(`📅 date idea: ${where.replace(/ \(.*\)/, "")}, ${when} — in?`);
+            sendMessage(`date idea: ${where.replace(/ \(.*\)/, "")}, ${when} — in?`);
             onPlanned();
             onClose();
           }}

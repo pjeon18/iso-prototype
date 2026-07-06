@@ -2,15 +2,15 @@ import { useState } from "react";
 import { asset } from "../../lib/assets";
 import { useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { durations } from "../../lib/motion";
 import { useIsoStore } from "../../store/useIsoStore";
 
 /**
- * Screen 01 — Splash, reproduced from assets/iso-splash.svg.
+ * Screen 01 — Splash, reproduced from the brand splash.
  *
- * Paced like a real app boot, not a static slide: the gradient breathes
- * alone for a beat, the mark arrives slowly, the tagline follows, and only
- * then do the buttons fade up. Getting to know someone starts unhurried.
+ * Paced like a real app boot, deliberately unhurried: the screen opens on a
+ * deep, intense amber that slowly warms toward the brand gradient; the mark
+ * fades in alone, holds; the tagline arrives well after; and only much later
+ * do the buttons ease up. Getting to know someone starts slow.
  */
 
 const easeSoft = [0.22, 1, 0.36, 1] as const;
@@ -21,48 +21,63 @@ export function Splash() {
   const reduced = useReducedMotion();
   const [ready, setReady] = useState(false);
 
-  // beats (seconds): gradient alone → logo → tagline → buttons
+  // beats (seconds): intense bg settles → logo → long hold → tagline → buttons
   const t = reduced
-    ? { logo: 0.05, logoDur: 0.3, tag: 0.25, tagDur: 0.3, cta: 0.5, ctaDur: 0.3 }
-    : { logo: 0.35, logoDur: 1.1, tag: 1.5, tagDur: 0.8, cta: 2.5, ctaDur: 0.9 };
-
-  // buttons accept input only once their entrance has actually played —
-  // gated on the animation itself, not a wall-clock timer
+    ? { logo: 0.05, logoDur: 0.3, tag: 0.3, tagDur: 0.3, cta: 0.6, ctaDur: 0.3, bg: 0.3 }
+    : { logo: 0.9, logoDur: 2.0, tag: 3.4, tagDur: 1.6, cta: 5.4, ctaDur: 1.4, bg: 4.5 };
 
   return (
-    <div
-      className="h-full flex flex-col"
-      style={{
-        background:
-          "linear-gradient(180deg, #FFE8C1 0%, #F8BD62 44.7%, #E68C0F 100%)",
-      }}
-    >
-      <div className="flex-1 flex flex-col items-center justify-center px-8">
+    <div className="h-full flex flex-col relative overflow-hidden" style={{ background: "#D64400" }}>
+      {/* the background eases from an intense ember up to the full brand
+          gradient — the whole screen slowly warms as you arrive */}
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, #FFCE65 0%, #FF8C2E 49.5%, #D64400 100%)",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: t.bg, duration: reduced ? 0.3 : 3.2, ease: "easeInOut" }}
+      />
+      {/* a slow radial glow breathing behind the mark */}
+      {!reduced && (
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(420px 420px at 50% 42%, rgba(255,220,150,0.55), transparent 70%)",
+          }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: [0, 0.9, 0.6], scale: [0.9, 1.05, 1] }}
+          transition={{ delay: t.logo, duration: 5, ease: "easeInOut" }}
+        />
+      )}
+
+      <div className="flex-1 flex flex-col items-center justify-center px-8 relative z-10">
         <motion.img
           src={asset("assets/iso-mark-white.svg")}
           alt="ISO"
-          className="w-[158px] mt-16"
-          initial={{ opacity: 0, scale: 0.94, y: 10 }}
+          className="w-[166px] mt-16"
+          initial={{ opacity: 0, scale: 0.9, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: t.logo, duration: t.logoDur, ease: easeSoft }}
         />
-        <motion.p
-          className="mt-7 font-display font-semibold text-[17px] text-white text-center"
-          style={{ textShadow: "0 1px 3px rgba(126,46,2,0.25)" }}
-          initial={{ opacity: 0, y: 8 }}
+        <motion.img
+          src={asset("assets/tagline-real.svg")}
+          alt="its time for a real one-on-one."
+          className="mt-8 w-[248px]"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: t.tag, duration: t.tagDur, ease: easeSoft }}
-        >
-          its time for a <span style={{ color: "var(--iso-green)" }}>real</span>{" "}
-          one-on-one.
-        </motion.p>
+        />
       </div>
 
-      {/* layout space is reserved from the start — nothing jumps when these arrive */}
+      {/* layout space reserved from the start — nothing jumps when these arrive */}
       <motion.div
-        className="px-6 pb-10 flex flex-col gap-2.5"
+        className="px-6 pb-10 flex flex-col gap-2.5 relative z-10"
         style={{ pointerEvents: ready ? "auto" : "none" }}
-        initial={{ opacity: 0, y: 22 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: t.cta, duration: t.ctaDur, ease: easeSoft }}
         onAnimationComplete={() => setReady(true)}
@@ -89,7 +104,7 @@ export function Splash() {
           style={{ color: "rgba(255,255,255,0.85)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: t.cta + 0.4, duration: durations.reveal }}
+          transition={{ delay: t.cta + 0.5, duration: 1.0 }}
         >
           One conversation at a time.
         </motion.p>

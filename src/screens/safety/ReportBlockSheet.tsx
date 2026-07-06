@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../../components/Modal";
+import { Icon } from "../../components/icons";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 
 const REASONS = ["Made me uncomfortable", "Inappropriate messages", "Spam or fake profile", "Something else"];
@@ -36,20 +37,20 @@ export function ReportBlockSheet({
             Private — {persona.name} is never told.
           </p>
           <div className="flex flex-col gap-2 mt-4">
-            <button className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full" onClick={() => setMode("report")}>
-              🚩 Report a problem
+            <button className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full flex items-center gap-2.5" onClick={() => setMode("report")}>
+              <Icon name="flag" size={17} color="var(--iso-text-2)" /> Report a problem
             </button>
-            <button className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full" onClick={() => setMode("block")}>
-              🚫 Block & end chat
+            <button className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full flex items-center gap-2.5" onClick={() => setMode("block")}>
+              <Icon name="block" size={17} color="var(--iso-text-2)" /> Block & end chat
             </button>
             <button
-              className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full"
+              className="card p-3.5 text-left text-[14px] text-ink2 cursor-pointer border-none w-full flex items-center gap-2.5"
               onClick={() => {
                 toast("Notifications muted for this chat.");
                 close();
               }}
             >
-              🔕 Mute notifications
+              <Icon name="bellOff" size={17} color="var(--iso-text-2)" /> Mute notifications
             </button>
             <button className="btn btn-ghost !py-2.5" onClick={close}>
               Cancel

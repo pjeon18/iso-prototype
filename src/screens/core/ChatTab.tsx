@@ -6,6 +6,7 @@ import { Avatar } from "../../components/Avatar";
 import { TypingDots } from "../../components/TypingDots";
 import { Modal } from "../../components/Modal";
 import { bloomWave, tapPoint } from "../../components/ColorWave";
+import { Icon } from "../../components/icons";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 import { Bubble } from "./LiveRoom";
 import { ReportBlockSheet } from "../safety/ReportBlockSheet";
@@ -37,12 +38,12 @@ function EmptyChat() {
             transition={{ duration: 2.8, repeat: Infinity, ease: "easeOut" }}
           />
           <motion.div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-[26px]"
+            className="w-16 h-16 rounded-full flex items-center justify-center"
             style={{ background: "var(--iso-accent-tint)" }}
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
           >
-            💬
+            <Icon name="chat" size={26} color="var(--iso-accent)" />
           </motion.div>
         </div>
         <h2 className="font-display font-semibold text-[19px] mt-4 text-ink">
@@ -119,7 +120,7 @@ function OneChat() {
           <div className="font-display font-semibold text-[15px] text-ink leading-tight">
             {persona.name}
           </div>
-          <div className="text-[11.5px] text-ink3">you both said yes 🎉</div>
+          <div className="text-[11.5px] text-ink3">you both said yes</div>
         </div>
         <div className="flex-1" />
         <button
@@ -161,7 +162,8 @@ function OneChat() {
         }}
         onClick={() => setConfirmOpen(true)}
       >
-        🔒 Talk to someone new?
+        <Icon name="lock" size={15} color="var(--iso-text-2)" />
+        Talk to someone new?
         <span className="flex-1" />
         <span className="text-ink3">›</span>
       </button>
@@ -189,7 +191,7 @@ function OneChat() {
       {/* Screen 16 — close confirmation: the exclusivity guardrail */}
       <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <div className="text-center">
-          <div className="text-[30px]">🔒</div>
+          <div className="flex justify-center"><Icon name="lock" size={28} color="var(--iso-accent)" /></div>
           <h3 className="font-display font-semibold text-[19px] mt-2 text-ink">
             Close your chat with {persona.name}?
           </h3>

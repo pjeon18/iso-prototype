@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
 import { MeAvatar } from "../../components/Avatar";
 import { pressCard, riseIn, springs } from "../../lib/motion";
-import { useIsoStore } from "../../store/useIsoStore";
+import { personaById, useIsoStore } from "../../store/useIsoStore";
 
 /**
  * Profile tab — aesthetic bento grid of DESTINATIONS (Motion Brief §6).
@@ -61,6 +61,11 @@ const Icons = {
       <path {...stroke} d="M4 17c3-1 4-6.5 7-6.5s3.5 4 6 4c1.4 0 2.4-.9 3-1.8" />
     </svg>
   ),
+  maybe: (
+    <svg width="21" height="21" viewBox="0 0 24 24">
+      <path {...stroke} d="M12 20s-7-4.6-7-10a4.2 4.2 0 0 1 7-3.1A4.2 4.2 0 0 1 19 10c0 5.4-7 10-7 10Z" />
+    </svg>
+  ),
 };
 
 interface Card {
@@ -84,6 +89,7 @@ export function ProfileHub() {
   const history = useIsoStore((s) => s.history);
   const blocked = useIsoStore((s) => s.blocked);
   const reports = useIsoStore((s) => s.reports);
+  const slot = useIsoStore((s) => s.revival.slot);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef(new Map<string, HTMLElement>());
@@ -104,7 +110,7 @@ export function ProfileHub() {
     { key: "memories", to: "/profile/memories", label: "Memories", size: "tall", icon: Icons.memories, treatment: "journal",
       state: isPlus ? `${memoriesCount} saved — private` : "part of ISO+" },
     { key: "plus", to: isPlus ? "/profile/subscription" : "/plus", label: "ISO+", size: "square", icon: Icons.plus, treatment: "plus",
-      state: isPlus ? "Active ✨" : "Try it" },
+      state: isPlus ? "Active" : "Try it" },
     { key: "notifications", to: "/profile/settings", label: "Notifications", size: "square", icon: Icons.bell,
       state: (
         <span className="inline-flex items-center gap-1.5">
@@ -118,7 +124,9 @@ export function ProfileHub() {
     { key: "subscription", to: "/profile/subscription", label: "Subscription", size: "square", icon: Icons.card,
       state: isPlus ? "$14.99/mo" : "free plan" },
     { key: "trend", to: "/profile/trend", label: "Your trend", size: "square", icon: Icons.trend,
-      state: datesMet > 0 ? `${datesMet} real date${datesMet > 1 ? "s" : ""} ☕️` : "story starts now" },
+      state: datesMet > 0 ? `${datesMet} real date${datesMet > 1 ? "s" : ""}` : "story starts now" },
+    { key: "maybe", to: "/profile/maybe", label: "Maybe We'll Meet Again", size: "square", icon: Icons.maybe,
+      state: slot ? `${personaById(slot.personaId).name}, held quietly` : "unheld" },
   ];
 
   const fullRect = () => {
@@ -199,7 +207,7 @@ export function ProfileHub() {
           ))}
         </div>
         <p className="text-center text-[11px] text-ink3 mt-6 mb-1">
-          One conversation at a time. 🧡
+          One conversation at a time.
         </p>
       </div>
 

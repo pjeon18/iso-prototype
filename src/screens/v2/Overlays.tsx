@@ -3,17 +3,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Modal } from "../../components/Modal";
 import { Avatar } from "../../components/Avatar";
 import { bloomWave, tapPoint } from "../../components/ColorWave";
+import { Icon, FeelScale } from "../../components/icons";
 import { springs } from "../../lib/motion";
 import { revivalSeed } from "../../data/seedData";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 
-const FACES = [
-  { v: 1, e: "😕" },
-  { v: 2, e: "😐" },
-  { v: 3, e: "🙂" },
-  { v: 4, e: "😊" },
-  { v: 5, e: "🤩" },
-];
 const TAGS = ["easy", "made me laugh", "kind", "spark", "felt off", "rushed"];
 
 /**
@@ -39,7 +33,7 @@ export function CloseoutWizard() {
     <Modal open onClose={skip}>
       {closeout.stage === "outcome" && (
         <div className="text-center">
-          <div className="text-[28px]">☕️</div>
+          <div className="flex justify-center"><Icon name="coffee" size={26} color="var(--iso-accent)" /></div>
           <h3 className="font-display font-semibold text-[19px] mt-2 text-ink">
             Did you two meet up?
           </h3>
@@ -58,7 +52,7 @@ export function CloseoutWizard() {
                 })
               }
             >
-              Yes, we met 🎉
+              Yes, we met
             </button>
             <div className="flex gap-2">
               <button className="btn btn-sec !py-2.5" onClick={() => answerOutcome("not_yet")}>
@@ -102,19 +96,13 @@ export function CloseoutWizard() {
               </button>
             ))}
           </div>
-          <div className="flex justify-center gap-3 mt-4">
-            {FACES.map((f) => (
-              <button
-                key={f.v}
-                className="border-none bg-transparent cursor-pointer text-[26px] hover:scale-110 transition-transform"
-                onClick={() => {
-                  answerReflection(f.v, tags);
-                  setTags([]);
-                }}
-              >
-                {f.e}
-              </button>
-            ))}
+          <div className="mt-5 mb-1">
+            <FeelScale
+              onPick={(v) => {
+                answerReflection(v, tags);
+                setTags([]);
+              }}
+            />
           </div>
           <button className="btn btn-ghost !py-1.5 !text-[12.5px] mt-3" onClick={skip}>
             skip
@@ -124,19 +112,19 @@ export function CloseoutWizard() {
 
       {closeout.stage === "revival" && (
         <div className="text-center">
-          <div className="text-[26px]">🔖</div>
+          <div className="flex justify-center"><Icon name="heart" size={26} color="var(--iso-accent)" /></div>
           <h3 className="font-display font-semibold text-[19px] mt-2 text-ink">
-            Would you talk to {persona.name} again?
+            Hold {persona.name} in “Maybe We'll Meet Again”?
           </h3>
           {confirmReplace ? (
             <>
               <p className="text-[12.5px] mt-2 text-ink3 leading-relaxed">
-                You keep <b>one</b> private flag. Saving this replaces your
-                current one — an explicit trade.
+                You can hold <b>one</b> person. Choosing {persona.name} lets go
+                of whoever you're holding now — an explicit trade.
               </p>
               <div className="flex flex-col gap-2 mt-4">
                 <button className="btn btn-pri" onClick={() => flagRevival(true)}>
-                  Replace my flag
+                  Hold {persona.name} instead
                 </button>
                 <button className="btn btn-ghost !py-2" onClick={() => setConfirmReplace(false)}>
                   Never mind
@@ -146,15 +134,15 @@ export function CloseoutWizard() {
           ) : (
             <>
               <p className="text-[12.5px] mt-2 text-ink3 leading-relaxed">
-                Save your one private flag. They'll never know — unless they
-                independently flag you too. One-sided flags quietly expire.
+                Hold this one, privately. They'll never know — unless they
+                independently hold you too. If they don't, it quietly fades.
               </p>
               <div className="flex flex-col gap-2 mt-4">
                 <button
                   className="btn btn-pri"
                   onClick={() => (slotConflict ? setConfirmReplace(true) : flagRevival(true))}
                 >
-                  Save my one flag
+                  Hold {persona.name}
                 </button>
                 <button className="btn btn-ghost !py-2" onClick={() => flagRevival(false)}>
                   No thanks
@@ -180,7 +168,7 @@ export function OngoingOutcomePrompt() {
   return (
     <Modal open onClose={dismiss}>
       <div className="text-center">
-        <div className="text-[28px]">☕️</div>
+        <div className="flex justify-center"><Icon name="coffee" size={26} color="var(--iso-accent)" /></div>
         <h3 className="font-display font-semibold text-[19px] mt-2 text-ink">
           Did you two meet up?
         </h3>
@@ -195,7 +183,7 @@ export function OngoingOutcomePrompt() {
               bloomWave({ color: "green", from: tapPoint(e), onCovered: () => answer("met") })
             }
           >
-            Yes, we met 🎉
+            Yes, we met
           </button>
           <div className="flex gap-2">
             <button className="btn btn-sec !py-2.5" onClick={() => answer("not_yet")}>
@@ -306,7 +294,7 @@ export function BurnoutNudge() {
   return (
     <Modal open onClose={() => dismiss(false)}>
       <div className="text-center">
-        <div className="text-[30px]">🫖</div>
+        <div className="flex justify-center"><Icon name="pause" size={28} color="var(--iso-accent)" /></div>
         <h3 className="font-display font-semibold text-[19px] mt-2 text-ink">
           Take a break?
         </h3>

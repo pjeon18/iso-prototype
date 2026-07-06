@@ -35,6 +35,7 @@ import { Subscription } from "./screens/account/Subscription";
 import { Paywall } from "./screens/plus/Paywall";
 import { Memories } from "./screens/plus/Memories";
 import { TrendRecap } from "./screens/v2/TrendRecap";
+import { MaybeAgain } from "./screens/v2/MaybeAgain";
 import { SafetyCenter } from "./screens/safety/SafetyCenter";
 import {
   BurnoutNudge,
@@ -212,6 +213,7 @@ export default function App() {
           <Route path="/profile/safety" element={<SafetyCenter />} />
           <Route path="/profile/memories" element={<Memories />} />
           <Route path="/profile/trend" element={<TrendRecap />} />
+          <Route path="/profile/maybe" element={<MaybeAgain />} />
           <Route path="/plus" element={<Paywall />} />
         </Route>
 

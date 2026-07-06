@@ -94,11 +94,53 @@ export interface ToastMsg {
   action?: { label: string; kind: "openMatch" };
 }
 
+/** Hinge/Tinder-grade profile basics, captured in onboarding, shown on the
+ * profile. Photos are simulated (warm placeholder + caption) — prototype. */
+export interface ProfilePhoto {
+  id: number;
+  filled: boolean;
+  hue: number; // placeholder tint
+  caption: string;
+}
+export interface Profile {
+  photos: ProfilePhoto[]; // exactly 9 — a 3×3 grid
+  gender: string;
+  age: number;
+  heightCm: number;
+  location: string;
+  hometown: string;
+  work: string;
+  interests: string[];
+  socials: string[]; // connected apps (stubbed)
+  ageRange: [number, number];
+  distanceMi: number;
+}
+
+export const defaultProfile = (): Profile => ({
+  photos: Array.from({ length: 9 }, (_, i) => ({
+    id: i,
+    filled: false,
+    hue: [28, 16, 38, 22, 8, 32, 18, 42, 26][i],
+    caption: "",
+  })),
+  gender: "Non-binary",
+  age: 21,
+  heightCm: 173,
+  location: "Seattle, WA",
+  hometown: "",
+  work: "Junior at UW",
+  interests: [],
+  socials: [],
+  ageRange: [19, 25],
+  distanceMi: 10,
+});
+
 interface IsoState {
   // session
   onboarded: boolean;
   isPlus: boolean;
   user: typeof currentUser;
+  profile: Profile;
 
   // queue
   queue: {
@@ -138,6 +180,9 @@ interface IsoState {
   dismissToast: (id: number) => void;
 
   completeOnboarding: () => void;
+  updateProfile: (patch: Partial<Profile>) => void;
+  /** quietly clears the one "Maybe We'll Meet Again" flag */
+  releaseRevival: () => void;
 
   enterQueue: (background?: boolean) => void;
   leaveQueue: () => void;
@@ -435,6 +480,7 @@ export const useIsoStore = create<IsoState>()(
         onboarded: false,
         isPlus: currentUser.isPlus,
         user: currentUser,
+        profile: defaultProfile(),
 
         queue: { status: "idle", matchedPersonaId: null, background: false, nextIsRevival: false },
         activeChat: null,
@@ -469,6 +515,14 @@ export const useIsoStore = create<IsoState>()(
           set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
         completeOnboarding: () => set({ onboarded: true }),
+
+        updateProfile: (patch) =>
+          set((s) => ({ profile: { ...s.profile, ...patch } })),
+
+        releaseRevival: () => {
+          set((s) => ({ revival: { ...s.revival, slot: null } }));
+          get().toast("Released — quietly. They were never told it existed.");
+        },
 
         // ------------- THE INVARIANT (APPROVED_PLAN.md §D1) -------------
         // enterQueue is a no-op with a toast while any chat exists. The
@@ -646,7 +700,7 @@ export const useIsoStore = create<IsoState>()(
                   {
                     id: uid("m"),
                     from: "system",
-                    text: "You both said yes — this is your one ongoing chat. 🎉",
+                    text: "You both said yes — this is your one ongoing chat.",
                     at: get().now(),
                   },
                   {
@@ -855,7 +909,7 @@ export const useIsoStore = create<IsoState>()(
 
         unlockPlus: () => {
           set({ isPlus: true });
-          get().toast("Welcome to ISO+ ✨");
+          get().toast("Welcome to ISO+");
         },
         cancelPlus: () => {
           set({ isPlus: false });
@@ -873,7 +927,7 @@ export const useIsoStore = create<IsoState>()(
           }
           checkRevivalDecay();
           maybeSurfaceRevival();
-          get().toast(`⏩ ${hours}h later…`);
+          get().toast(`${hours} hours later…`);
         },
 
         setDebug: (patch) =>
@@ -924,6 +978,7 @@ export const useIsoStore = create<IsoState>()(
         onboarded: s.onboarded,
         isPlus: s.isPlus,
         user: s.user,
+        profile: s.profile,
         activeChat: s.activeChat,
         history: s.history,
         revival: { ...s.revival, offer: null },

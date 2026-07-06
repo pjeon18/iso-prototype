@@ -1,4 +1,5 @@
 import { personaById, useIsoStore } from "../../store/useIsoStore";
+import { Icon } from "../../components/icons";
 import { daysAgoLabel } from "../../lib/time";
 import { SubScreen } from "../account/ProfileHub";
 
@@ -31,15 +32,21 @@ export function SafetyCenter() {
         ) : (
           <div className="mt-2 flex flex-col gap-1.5">
             {reports.map((r, i) => (
-              <p key={i} className="text-[12.5px] text-ink3">
-                🚩 Reported {personaById(r.personaId).name} — “{r.reason}” ·{" "}
-                {daysAgoLabel(nowMs, r.at)} · under review
+              <p key={i} className="text-[12.5px] text-ink3 flex items-start gap-1.5">
+                <Icon name="flag" size={14} color="var(--iso-text-3)" />
+                <span>
+                  Reported {personaById(r.personaId).name} — “{r.reason}” ·{" "}
+                  {daysAgoLabel(nowMs, r.at)} · under review
+                </span>
               </p>
             ))}
             {blocked.map((id) => (
-              <p key={id} className="text-[12.5px] text-ink3">
-                🚫 Blocked {personaById(id).name} — permanent, everywhere
-                (matching, Memories, revival)
+              <p key={id} className="text-[12.5px] text-ink3 flex items-start gap-1.5">
+                <Icon name="block" size={14} color="var(--iso-text-3)" />
+                <span>
+                  Blocked {personaById(id).name} — permanent, everywhere
+                  (matching, Memories, revival)
+                </span>
               </p>
             ))}
           </div>

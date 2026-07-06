@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
+import { Icon, type IconName } from "../../components/icons";
 import { useIsoStore } from "../../store/useIsoStore";
 
-const PERKS = [
-  { icon: "🌙", title: "Background queue", body: "Queue up, close the app — we ping you when a match is live." },
-  { icon: "🕰️", title: "Memories", body: "A private, read-only journal of the conversations that mattered." },
-  { icon: "🎵", title: "Live prompts", body: "Song requests, photo-of-the-day — expression, in the moment." },
-  { icon: "📅", title: "Date planner", body: "Move your one chat toward a real-life date, faster." },
+const PERKS: { icon: IconName; title: string; body: string }[] = [
+  { icon: "moon", title: "Background queue", body: "Queue up, close the app — we ping you when a match is live." },
+  { icon: "clock", title: "Memories", body: "A private, read-only journal of the conversations that mattered." },
+  { icon: "music", title: "Live prompts", body: "Song requests, photo-of-the-day — expression, in the moment." },
+  { icon: "calendar", title: "Date planner", body: "Move your one chat toward a real-life date, faster." },
 ];
 
 /** Screen 17 — ISO+ paywall. Convenience & expression — never matches. */
@@ -33,7 +34,7 @@ export function Paywall() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 * i }}
             >
-              <span className="text-[22px]">{p.icon}</span>
+              <span className="mt-0.5"><Icon name={p.icon} size={21} color="var(--iso-accent)" /></span>
               <div>
                 <p className="text-[14px] font-semibold text-ink">{p.title}</p>
                 <p className="text-[12px] text-ink3 mt-0.5 leading-snug">{p.body}</p>
@@ -49,7 +50,7 @@ export function Paywall() {
       <div className="px-6 pb-8 pt-3 flex flex-col gap-2 flex-none">
         {isPlus ? (
           <button className="btn btn-sec" onClick={() => navigate(-1)}>
-            You're already a member ✨ — back
+            You're already a member — back
           </button>
         ) : (
           <>

@@ -1,17 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
+import { BigSlider, RangeSlider } from "../../components/Slider";
+import { Icon } from "../../components/icons";
 import { springs } from "../../lib/motion";
 import { currentUser } from "../../data/seedData";
 import { useIsoStore } from "../../store/useIsoStore";
 
 /**
- * Screens 02–08 — onboarding. Verification is UI-only and always succeeds
- * after a beat (build spec §4.4), with the PRD's real copy and rationale.
+ * Screens 02–08+ — onboarding. Verification is UI-only and always succeeds
+ * after a beat (build spec §4.4). The profile section is Hinge/Tinder-grade:
+ * real basics, a 3×3 photo grid with captions, interests, socials — and every
+ * numeric input is a slider with the number displayed big.
  */
 
-const STEPS = ["signup", "edu", "photo", "basics", "prompts", "prefs", "perms"] as const;
+const STEPS = [
+  "signup", "edu", "photo", "basics", "photos", "interests", "prompts", "socials", "prefs", "perms",
+] as const;
 type Step = (typeof STEPS)[number];
 
 export function Onboarding() {
@@ -22,7 +28,7 @@ export function Onboarding() {
 
   return (
     <div className="flex-1 min-h-0 h-full flex flex-col bg-cream">
-      <StatusBar right={`${idx + 1}/7`} />
+      <StatusBar right={`${idx + 1}/${STEPS.length}`} />
       <div className="px-6 pt-1 flex-none">
         <div className="h-1 rounded-pill overflow-hidden" style={{ background: "rgba(248,189,98,0.3)" }}>
           <motion.div
@@ -33,9 +39,7 @@ export function Onboarding() {
           />
         </div>
       </div>
-      {/* forward through a sequence slides LEFT (motion brief §5), unhurried —
-          each step is a new question, not a form to race through. Keyed remount
-          with entrance-only motion — never gate a step change on an exit finishing */}
+      {/* forward through a sequence slides LEFT (motion brief §5), unhurried */}
       <motion.div
         key={step}
         className="flex-1 min-h-0 flex flex-col"
@@ -43,13 +47,16 @@ export function Onboarding() {
         animate={{ opacity: 1, x: 0 }}
         transition={reduced ? { duration: 0.22 } : springs.calm}
       >
-          {step === "signup" && <SignUp onNext={next} />}
-          {step === "edu" && <EduVerify onNext={next} />}
-          {step === "photo" && <PhotoVerify onNext={next} />}
-          {step === "basics" && <Basics onNext={next} />}
-          {step === "prompts" && <Prompts onNext={next} />}
-          {step === "prefs" && <Prefs onNext={next} />}
-          {step === "perms" && <Perms />}
+        {step === "signup" && <SignUp onNext={next} />}
+        {step === "edu" && <EduVerify onNext={next} />}
+        {step === "photo" && <PhotoVerify onNext={next} />}
+        {step === "basics" && <Basics onNext={next} />}
+        {step === "photos" && <PhotoGrid onNext={next} />}
+        {step === "interests" && <Interests onNext={next} />}
+        {step === "prompts" && <Prompts onNext={next} />}
+        {step === "socials" && <Socials onNext={next} />}
+        {step === "prefs" && <Prefs onNext={next} />}
+        {step === "perms" && <Perms />}
       </motion.div>
     </div>
   );
@@ -62,6 +69,7 @@ function Frame({
   cta,
   onCta,
   ctaDisabled,
+  skippable,
 }: {
   title: string;
   caption?: string;
@@ -69,9 +77,8 @@ function Frame({
   cta: string;
   onCta: () => void;
   ctaDisabled?: boolean;
+  skippable?: boolean;
 }) {
-  // the step slides in, then its content settles in reading order:
-  // question first, the fields a breath later, the button last
   const stage = (delay: number) => ({
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
@@ -84,19 +91,24 @@ function Frame({
         <h2 className="font-display font-semibold text-[22px] text-ink">{title}</h2>
         {caption && <p className="text-[13px] mt-1.5 text-ink3 leading-relaxed">{caption}</p>}
       </motion.div>
-      <motion.div className="flex-1 min-h-0 scroll-y mt-5 flex flex-col gap-3" {...stage(0.5)}>
+      <motion.div className="flex-1 min-h-0 scroll-y mt-5 flex flex-col gap-3 pb-2" {...stage(0.5)}>
         {children}
       </motion.div>
       <motion.div className="pb-8 pt-3 flex-none" {...stage(0.75)}>
         <button className="btn btn-pri" disabled={ctaDisabled} onClick={onCta}>
           {cta}
         </button>
+        {skippable && (
+          <button className="btn btn-ghost !py-2 !text-[12.5px] mt-1" onClick={onCta}>
+            skip for now
+          </button>
+        )}
       </motion.div>
     </div>
   );
 }
 
-/** 02 — Sign up (phone/email + OTP, stub-succeeds). */
+/* ------------------------------------------------------------------ 02 */
 function SignUp({ onNext }: { onNext: () => void }) {
   const [contact, setContact] = useState("");
   const [code, setCode] = useState("");
@@ -116,12 +128,7 @@ function SignUp({ onNext }: { onNext: () => void }) {
       ctaDisabled={!sent || !code}
       onCta={onNext}
     >
-      <input
-        className="input"
-        placeholder="Phone or email"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
-      />
+      <input className="input" placeholder="Phone or email" value={contact} onChange={(e) => setContact(e.target.value)} />
       {!sent ? (
         <button className="btn btn-sec !py-3" disabled={!contact.trim()} onClick={sendCode}>
           Text me a code
@@ -135,7 +142,7 @@ function SignUp({ onNext }: { onNext: () => void }) {
             onChange={(e) => setCode(e.target.value)}
           />
           <p className="text-[11.5px] text-center" style={{ color: "var(--iso-green)" }}>
-            {code ? "Code verified ✓" : "Code sent — check your messages"}
+            {code ? "Code verified" : "Code sent — check your messages"}
           </p>
         </>
       )}
@@ -146,7 +153,7 @@ function SignUp({ onNext }: { onNext: () => void }) {
   );
 }
 
-/** 03 — .edu verification with the trust rationale inline. */
+/* ------------------------------------------------------------------ 03 */
 function EduVerify({ onNext }: { onNext: () => void }) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -168,15 +175,10 @@ function EduVerify({ onNext }: { onNext: () => void }) {
       onCta={onNext}
     >
       <div className="relative">
-        <input
-          className="input"
-          placeholder="name@university.edu"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <input className="input" placeholder="name@university.edu" value={email} onChange={(e) => setEmail(e.target.value)} />
         {isEdu && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "var(--iso-green)" }}>
-            ✓
+          <span className="absolute right-4 top-1/2 -translate-y-1/2">
+            <Icon name="check" size={17} color="var(--iso-green)" strokeWidth={2.4} />
           </span>
         )}
       </div>
@@ -197,15 +199,18 @@ function EduVerify({ onNext }: { onNext: () => void }) {
           onChange={(e) => setCode(e.target.value)}
         />
       )}
-      <div className="card p-3.5 text-[12px] text-ink2 leading-relaxed">
-        🎓 <b>.edu domains only.</b> It bounds the trust circle to your campus
-        community — verification is why nobody here is a bot or a catfish.
+      <div className="card p-3.5 text-[12px] text-ink2 leading-relaxed flex gap-2.5">
+        <Icon name="shield" size={19} color="var(--iso-accent)" />
+        <span>
+          <b>.edu domains only.</b> It bounds the trust circle to your campus
+          community — verification is why nobody here is a bot or a catfish.
+        </span>
       </div>
     </Frame>
   );
 }
 
-/** 04 — Photo / liveness (pose-matched selfie, stub). */
+/* ------------------------------------------------------------------ 04 */
 function PhotoVerify({ onNext }: { onNext: () => void }) {
   const [state, setState] = useState<"idle" | "checking" | "done">("idle");
 
@@ -227,7 +232,7 @@ function PhotoVerify({ onNext }: { onNext: () => void }) {
           className="w-[150px] h-[184px] rounded-card-lg flex flex-col items-center justify-center border-2 border-dashed"
           style={{ borderColor: "rgba(107,74,42,0.35)", background: "var(--iso-surface)" }}
         >
-          {state === "idle" && <span className="text-[38px]">🤳</span>}
+          {state === "idle" && <Icon name="camera" size={40} color="var(--iso-text-3)" />}
           {state === "checking" && (
             <>
               <div
@@ -239,7 +244,7 @@ function PhotoVerify({ onNext }: { onNext: () => void }) {
           )}
           {state === "done" && (
             <>
-              <span className="text-[38px]">✅</span>
+              <Icon name="check" size={40} color="var(--iso-green)" strokeWidth={2.6} />
               <span className="text-[12px] mt-2 font-semibold" style={{ color: "var(--iso-green)" }}>
                 You're verified
               </span>
@@ -247,73 +252,311 @@ function PhotoVerify({ onNext }: { onNext: () => void }) {
           )}
         </div>
         <p className="text-[11.5px] text-ink3 mt-4 text-center max-w-[240px]">
-          🔒 Private — used only to verify you. Never shown on your profile,
-          never shared.
+          Private — used only to verify you. Never shown on your profile, never
+          shared.
         </p>
       </div>
     </Frame>
   );
 }
 
-/** 05 — Profile basics: deliberately lighter than incumbents. */
+/* ------------------------------------------------------------------ 05 · basics */
+const GENDERS = ["Woman", "Man", "Non-binary"];
+const ftIn = (cm: number) => {
+  const t = Math.round(cm / 2.54);
+  return `${Math.floor(t / 12)}'${t % 12}"`;
+};
+
 function Basics({ onNext }: { onNext: () => void }) {
+  const profile = useIsoStore((s) => s.profile);
+  const updateProfile = useIsoStore((s) => s.updateProfile);
   const [name, setName] = useState(currentUser.firstName);
-  const [age, setAge] = useState(String(currentUser.age));
+  const [customGender, setCustomGender] = useState(
+    GENDERS.includes(profile.gender) ? "" : profile.gender,
+  );
+  const [writingOwn, setWritingOwn] = useState(!GENDERS.includes(profile.gender));
 
   return (
     <Frame
       title="The basics"
-      caption="Lighter than the other apps on purpose — the conversation is the profile."
+      caption="The stuff a good first conversation is built on."
       cta="Next"
-      ctaDisabled={!name.trim() || !age.trim()}
+      ctaDisabled={!name.trim()}
       onCta={onNext}
     >
-      <div className="flex gap-2.5">
-        {["🙂", "+", "+"].map((c, i) => (
-          <div
-            key={i}
-            className="flex-1 h-[76px] rounded-card border-2 border-dashed flex items-center justify-center text-[22px]"
-            style={{ borderColor: "rgba(107,74,42,0.3)", color: "var(--iso-text-3)", background: i === 0 ? "var(--iso-accent-tint)" : "transparent" }}
-          >
-            {c}
-          </div>
-        ))}
-      </div>
       <input className="input" placeholder="First name" value={name} onChange={(e) => setName(e.target.value)} />
-      <input className="input" placeholder="Age" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
-      <select className="input" defaultValue="nonbinary">
-        <option value="woman">Woman</option>
-        <option value="man">Man</option>
-        <option value="nonbinary">Non-binary</option>
-        <option value="other">Prefer to self-describe</option>
-      </select>
+
+      <div className="card p-4">
+        <BigSlider label="Age" min={18} max={35} value={profile.age} onChange={(v) => updateProfile({ age: v })} />
+      </div>
+
+      <div className="card p-4">
+        <p className="text-[12px] font-semibold text-ink2 mb-2">Gender</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {GENDERS.map((g) => (
+            <button
+              key={g}
+              className={`chip ${profile.gender === g && !writingOwn ? "chip-on" : ""}`}
+              onClick={() => {
+                setWritingOwn(false);
+                updateProfile({ gender: g });
+              }}
+            >
+              {g}
+            </button>
+          ))}
+          <button className={`chip ${writingOwn ? "chip-on" : ""}`} onClick={() => setWritingOwn(true)}>
+            Write my own
+          </button>
+        </div>
+        {writingOwn && (
+          <input
+            className="input mt-2.5"
+            placeholder="In your words"
+            value={customGender}
+            onChange={(e) => {
+              setCustomGender(e.target.value);
+              updateProfile({ gender: e.target.value || "Non-binary" });
+            }}
+          />
+        )}
+      </div>
+
+      <div className="card p-4">
+        <BigSlider
+          label="Height"
+          min={147}
+          max={210}
+          value={profile.heightCm}
+          onChange={(v) => updateProfile({ heightCm: v })}
+          format={ftIn}
+        />
+      </div>
+
+      <div className="card p-4 flex items-center gap-3">
+        <Icon name="pin" size={20} color="var(--iso-accent)" />
+        <div className="flex-1">
+          <p className="text-[12px] font-semibold text-ink2">Where you are</p>
+          <input
+            className="input !border-none !p-0 !rounded-none mt-0.5 text-[14px]"
+            value={profile.location}
+            onChange={(e) => updateProfile({ location: e.target.value })}
+          />
+        </div>
+      </div>
+      <input
+        className="input"
+        placeholder="Hometown (optional — great small talk)"
+        value={profile.hometown}
+        onChange={(e) => updateProfile({ hometown: e.target.value })}
+      />
+      <input
+        className="input"
+        placeholder="What you do (school, work, both)"
+        value={profile.work}
+        onChange={(e) => updateProfile({ work: e.target.value })}
+      />
     </Frame>
   );
 }
 
-/** 06 — Prompts: talking points, not a résumé. They seed the ice-breaker. */
-function Prompts({ onNext }: { onNext: () => void }) {
-  const [answers, setAnswers] = useState(currentUser.prompts.map((p) => p.answer));
+/* ------------------------------------------------------------------ 06 · photos (3×3) */
+const SLOT_HINTS = [
+  "your opener — the real you",
+  "mid-laugh, not mid-pose",
+  "doing the thing you love",
+  "with people (say who)",
+  "golden hour never misses",
+  "the hobby shot",
+  "somewhere you'd take them",
+  "your proudest plate or project",
+  "one wildcard",
+];
+
+export function photoFill(hue: number) {
+  return `linear-gradient(150deg, hsl(${hue} 90% 78%), hsl(${hue + 18} 82% 60%))`;
+}
+
+function PhotoGrid({ onNext }: { onNext: () => void }) {
+  const profile = useIsoStore((s) => s.profile);
+  const updateProfile = useIsoStore((s) => s.updateProfile);
+  const [sel, setSel] = useState<number | null>(null);
+  const filled = profile.photos.filter((p) => p.filled).length;
+
+  const setPhoto = (id: number, patch: Partial<(typeof profile.photos)[0]>) =>
+    updateProfile({ photos: profile.photos.map((p) => (p.id === id ? { ...p, ...patch } : p)) });
+
   return (
     <Frame
-      title="A few prompts"
-      caption="Not a résumé — talking points. Your first ice-breaker comes from these."
-      cta="Next"
-      ctaDisabled={answers.some((a) => !a.trim())}
+      title="Nine photos, your grid"
+      caption="They'll show on your profile as a 3×3 — like the best version of your camera roll. Captions make them conversation bait. Add at least three."
+      cta={`Next${filled < 3 ? ` — ${3 - filled} more to go` : ""}`}
+      ctaDisabled={filled < 3}
       onCta={onNext}
     >
-      {currentUser.prompts.map((p, i) => (
-        <div key={p.label} className="card p-3.5">
-          <span className="text-[10.5px] font-bold tracking-[0.1em] uppercase" style={{ color: "var(--iso-accent)" }}>
-            {p.label}
-          </span>
+      <div className="grid grid-cols-3 gap-1.5">
+        {profile.photos.map((p) => (
+          <button
+            key={p.id}
+            className="relative border-none cursor-pointer p-0 overflow-hidden"
+            style={{
+              aspectRatio: "1",
+              borderRadius: 10,
+              background: p.filled ? photoFill(p.hue) : "rgba(248,189,98,0.16)",
+              outline: sel === p.id ? "2.5px solid var(--iso-accent)" : "1.5px dashed rgba(107,74,42,0.28)",
+              outlineOffset: -2,
+            }}
+            onClick={() => {
+              if (!p.filled) setPhoto(p.id, { filled: true });
+              setSel(p.id);
+            }}
+          >
+            {!p.filled && (
+              <span className="text-[22px] font-display" style={{ color: "rgba(107,74,42,0.5)" }}>
+                +
+              </span>
+            )}
+            {p.filled && p.caption && (
+              <span
+                className="absolute left-0 right-0 bottom-0 px-1.5 py-1 text-left text-[8px] leading-tight text-white truncate"
+                style={{ background: "linear-gradient(transparent, rgba(58,36,16,0.65))" }}
+              >
+                {p.caption}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {sel !== null && profile.photos[sel].filled && (
+        <div className="card p-3.5">
+          <p className="text-[11px] text-ink3 mb-1.5">
+            Slot {sel + 1} · <i>{SLOT_HINTS[sel]}</i>
+          </p>
+          <input
+            className="input !py-2.5"
+            placeholder="Caption it — where, when, or why it matters"
+            value={profile.photos[sel].caption}
+            onChange={(e) => setPhoto(sel, { caption: e.target.value })}
+            maxLength={60}
+          />
+          <button
+            className="border-none bg-transparent cursor-pointer text-[11.5px] mt-2 p-0 underline"
+            style={{ color: "var(--iso-text-3)" }}
+            onClick={() => {
+              setPhoto(sel, { filled: false, caption: "" });
+              setSel(null);
+            }}
+          >
+            Remove this photo
+          </button>
+        </div>
+      )}
+      <p className="text-[11px] text-ink3 text-center">
+        {filled}/9 added — photos are simulated in this prototype.
+      </p>
+    </Frame>
+  );
+}
+
+/* ------------------------------------------------------------------ 07 · interests */
+const INTERESTS = [
+  "live music", "hiking", "film photography", "cooking", "basketball", "reading",
+  "thrifting", "coffee crawls", "climbing", "poetry", "running", "jazz",
+  "board games", "museums", "street food", "road trips", "pottery", "pickup soccer",
+];
+
+function Interests({ onNext }: { onNext: () => void }) {
+  const profile = useIsoStore((s) => s.profile);
+  const updateProfile = useIsoStore((s) => s.updateProfile);
+  const picked = profile.interests;
+
+  const toggle = (i: string) =>
+    updateProfile({
+      interests: picked.includes(i) ? picked.filter((x) => x !== i) : picked.length < 7 ? [...picked, i] : picked,
+    });
+
+  return (
+    <Frame
+      title="What fills your weekends?"
+      caption="Pick 3–7. These seed better first questions than any bio."
+      cta={picked.length < 3 ? `Pick ${3 - picked.length} more` : "Next"}
+      ctaDisabled={picked.length < 3}
+      onCta={onNext}
+    >
+      <div className="flex gap-1.5 flex-wrap">
+        {INTERESTS.map((i) => (
+          <button key={i} className={`chip ${picked.includes(i) ? "chip-on" : ""}`} onClick={() => toggle(i)}>
+            {i}
+          </button>
+        ))}
+      </div>
+      <p className="text-[11px] text-ink3 text-center mt-1">{picked.length}/7 picked</p>
+    </Frame>
+  );
+}
+
+/* ------------------------------------------------------------------ 08 · prompts */
+const PROMPT_POOL = [
+  "Ideal first conversation",
+  "The fastest way to my heart",
+  "A hill I'll die on",
+  "My most irrational fear",
+  "Green flags I look for",
+  "My Sunday reset looks like",
+  "Two truths and a lie",
+  "I'm weirdly competitive about",
+  "The last thing that made me laugh out loud",
+];
+
+function Prompts({ onNext }: { onNext: () => void }) {
+  const user = useIsoStore((s) => s.user);
+  const [cards, setCards] = useState(
+    user.prompts.map((p) => ({ label: p.label, answer: p.answer })),
+  );
+
+  const shuffle = (i: number) => {
+    const used = cards.map((c) => c.label);
+    const pool = PROMPT_POOL.filter((l) => !used.includes(l));
+    const nextLabel = pool[Math.floor(Math.random() * pool.length)];
+    setCards((cur) => cur.map((c, j) => (j === i ? { label: nextLabel, answer: "" } : c)));
+  };
+
+  const save = () => {
+    useIsoStore.setState((s) => ({
+      user: { ...s.user, prompts: cards.map((c) => ({ label: c.label, answer: c.answer })) },
+    }));
+    onNext();
+  };
+
+  return (
+    <Frame
+      title="Three prompts, real answers"
+      caption="Not a résumé — talking points. Your first ice-breaker comes from these. Tap “swap” until one feels like you."
+      cta="Next"
+      ctaDisabled={cards.some((c) => !c.answer.trim())}
+      onCta={save}
+    >
+      {cards.map((c, i) => (
+        <div key={i} className="card p-3.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10.5px] font-bold tracking-[0.1em] uppercase" style={{ color: "var(--iso-accent)" }}>
+              {c.label}
+            </span>
+            <button
+              className="border-none bg-transparent cursor-pointer text-[11px] underline p-0"
+              style={{ color: "var(--iso-text-3)" }}
+              onClick={() => shuffle(i)}
+            >
+              swap
+            </button>
+          </div>
           <textarea
             className="input !border-none !p-0 !rounded-none mt-1 resize-none text-[13.5px]"
             rows={2}
-            value={answers[i]}
-            onChange={(e) =>
-              setAnswers((cur) => cur.map((a, j) => (j === i ? e.target.value : a)))
-            }
+            placeholder="Say it like you'd text it"
+            value={c.answer}
+            onChange={(e) => setCards((cur) => cur.map((x, j) => (j === i ? { ...x, answer: e.target.value } : x)))}
           />
         </div>
       ))}
@@ -321,34 +564,72 @@ function Prompts({ onNext }: { onNext: () => void }) {
   );
 }
 
-/** 07 — Preferences: chips feeding the matcher. */
-function Prefs({ onNext }: { onNext: () => void }) {
-  const [interest, setInterest] = useState("Everyone");
-  const [ages, setAges] = useState("19–25");
-  const [dist, setDist] = useState("My campus");
+/* ------------------------------------------------------------------ 09 · socials */
+const SOCIALS = [
+  { id: "instagram", name: "Instagram", mono: "Ig", blurb: "a peek at your grid", tone: "#C13584" },
+  { id: "spotify", name: "Spotify", mono: "Sp", blurb: "your on-repeat, on display", tone: "#1DB954" },
+  { id: "beli", name: "Beli", mono: "Be", blurb: "your restaurant taste says a lot", tone: "#E4572E" },
+  { id: "linkedin", name: "LinkedIn", mono: "Li", blurb: "for the ambitious-is-attractive crowd", tone: "#0A66C2" },
+  { id: "letterboxd", name: "Letterboxd", mono: "Lb", blurb: "four favorites, zero small talk", tone: "#456" },
+];
 
-  const Row = ({
-    label,
-    opts,
-    val,
-    set,
-  }: {
-    label: string;
-    opts: string[];
-    val: string;
-    set: (v: string) => void;
-  }) => (
-    <div>
-      <p className="text-[12px] font-semibold text-ink2 mb-1.5">{label}</p>
-      <div className="flex gap-1.5 flex-wrap">
-        {opts.map((o) => (
-          <button key={o} className={`chip ${val === o ? "chip-on" : ""}`} onClick={() => set(o)}>
-            {o}
-          </button>
-        ))}
-      </div>
-    </div>
+function Socials({ onNext }: { onNext: () => void }) {
+  const profile = useIsoStore((s) => s.profile);
+  const updateProfile = useIsoStore((s) => s.updateProfile);
+
+  const toggle = (id: string) =>
+    updateProfile({
+      socials: profile.socials.includes(id)
+        ? profile.socials.filter((x) => x !== id)
+        : [...profile.socials, id],
+    });
+
+  return (
+    <Frame
+      title="Bring your corners of the internet"
+      caption="Optional. Connected apps show as small cards on your profile — more texture, better first questions. (Stubbed in this prototype.)"
+      cta="Next"
+      onCta={onNext}
+      skippable
+    >
+      {SOCIALS.map((s) => {
+        const on = profile.socials.includes(s.id);
+        return (
+          <div key={s.id} className="card p-3.5 flex items-center gap-3">
+            <span
+              className="w-9 h-9 rounded-[10px] flex items-center justify-center font-display font-bold text-[13px] text-white flex-none"
+              style={{ background: s.tone }}
+            >
+              {s.mono}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[14px] font-semibold text-ink">{s.name}</p>
+              <p className="text-[11.5px] text-ink3">{s.blurb}</p>
+            </div>
+            <button
+              className={`border rounded-pill px-3.5 py-1.5 text-[12px] font-semibold cursor-pointer ${
+                on ? "text-white border-transparent" : "bg-transparent text-ink2"
+              }`}
+              style={{
+                background: on ? "var(--iso-accent)" : "transparent",
+                borderColor: on ? "transparent" : "rgba(107,74,42,0.3)",
+              }}
+              onClick={() => toggle(s.id)}
+            >
+              {on ? "Connected" : "Connect"}
+            </button>
+          </div>
+        );
+      })}
+    </Frame>
   );
+}
+
+/* ------------------------------------------------------------------ 10 · preferences (sliders) */
+function Prefs({ onNext }: { onNext: () => void }) {
+  const profile = useIsoStore((s) => s.profile);
+  const updateProfile = useIsoStore((s) => s.updateProfile);
+  const [interest, setInterest] = useState("Everyone");
 
   return (
     <Frame
@@ -357,14 +638,50 @@ function Prefs({ onNext }: { onNext: () => void }) {
       cta="Next"
       onCta={onNext}
     >
-      <Row label="Interested in" opts={["Women", "Men", "Everyone"]} val={interest} set={setInterest} />
-      <Row label="Age range" opts={["18–22", "19–25", "21–26", "24–30"]} val={ages} set={setAges} />
-      <Row label="Distance" opts={["My campus", "≤ 10 mi", "My city"]} val={dist} set={setDist} />
+      <div className="card p-4">
+        <p className="text-[12px] font-semibold text-ink2 mb-2">Interested in</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {["Women", "Men", "Everyone"].map((o) => (
+            <button key={o} className={`chip ${interest === o ? "chip-on" : ""}`} onClick={() => setInterest(o)}>
+              {o}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card p-4">
+        <RangeSlider
+          label="Age range"
+          min={18}
+          max={40}
+          lo={profile.ageRange[0]}
+          hi={profile.ageRange[1]}
+          onChange={(lo, hi) => updateProfile({ ageRange: [lo, hi] })}
+        />
+      </div>
+
+      <div className="card p-4">
+        <BigSlider
+          label="How far is too far?"
+          min={1}
+          max={50}
+          value={profile.distanceMi}
+          onChange={(v) => updateProfile({ distanceMi: v })}
+          unit="mi"
+        />
+        <p className="text-[11px] text-ink3 mt-1">
+          {profile.distanceMi <= 2
+            ? "campus only — you'll probably know their dining hall"
+            : profile.distanceMi <= 12
+              ? "your side of the city"
+              : "the whole metro — worth the bus ride"}
+        </p>
+      </div>
     </Frame>
   );
 }
 
-/** 08 — Permissions with plain-language rationale. */
+/* ------------------------------------------------------------------ 11 · permissions */
 function Perms() {
   const navigate = useNavigate();
   const completeOnboarding = useIsoStore((s) => s.completeOnboarding);
@@ -375,21 +692,21 @@ function Perms() {
     <Frame
       title="Allow a few things"
       caption="Both are about presence — the thing that makes ISO work."
-      cta="Finish — you're in →"
+      cta="Finish — you're in"
       onCta={() => {
         completeOnboarding();
         navigate("/queue", { replace: true });
       }}
     >
       <PermCard
-        icon="📍"
+        icon="pin"
         title="Location"
         body="To match you with people actually near your campus."
         on={loc}
         toggle={() => setLoc((v) => !v)}
       />
       <PermCard
-        icon="🔔"
+        icon="bell"
         title="Notifications"
         body="So you know the moment a match is live — they're only here now."
         on={notif}
@@ -397,8 +714,8 @@ function Perms() {
       />
       {!notif && (
         <p className="text-[11.5px] leading-relaxed" style={{ color: "#B05B2C" }}>
-          Heads up: without notifications you'll miss live matches — there's
-          no inbox to catch up on later. That's by design.
+          Heads up: without notifications you'll miss live matches — there's no
+          inbox to catch up on later. That's by design.
         </p>
       )}
     </Frame>
@@ -412,7 +729,7 @@ function PermCard({
   on,
   toggle,
 }: {
-  icon: string;
+  icon: "pin" | "bell";
   title: string;
   body: string;
   on: boolean;
@@ -420,13 +737,13 @@ function PermCard({
 }) {
   return (
     <button className="card p-4 flex items-center gap-3 text-left cursor-pointer w-full border-none" onClick={toggle}>
-      <span className="text-[22px]">{icon}</span>
+      <Icon name={icon} size={22} color="var(--iso-accent)" />
       <span className="flex-1">
         <span className="block text-[14px] font-semibold text-ink">{title}</span>
         <span className="block text-[12px] text-ink3 mt-0.5">{body}</span>
       </span>
       <span
-        className="w-11 h-6.5 rounded-pill relative flex-none transition-colors"
+        className="w-11 rounded-pill relative flex-none transition-colors"
         style={{ background: on ? "var(--iso-green)" : "rgba(107,74,42,0.25)", height: 26 }}
       >
         <span

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
 import { bloomWave, tapPoint } from "../../components/ColorWave";
+import { Icon } from "../../components/icons";
 import { useIsoStore } from "../../store/useIsoStore";
 
 /** Screen 14 — No-match retry: graceful, never an error. */
@@ -14,12 +15,11 @@ export function NoMatch() {
       <StatusBar />
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <motion.div
-          className="text-[44px]"
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 240, damping: 18 }}
         >
-          🌿
+          <Icon name="leaf" size={44} color="var(--iso-accent-soft)" />
         </motion.div>
         <h2 className="font-display font-semibold text-[21px] mt-4 text-ink">
           Campus is quiet right now
@@ -31,7 +31,7 @@ export function NoMatch() {
         <div
           className="card w-full mt-6 p-3.5 text-[12.5px] text-ink2 flex items-center gap-2.5 text-left"
         >
-          <span className="text-[18px]">🌙</span>
+          <Icon name="moon" size={18} color="var(--iso-accent)" />
           <span>
             <b>Prime time is 9–11pm</b> — that's when your campus shows up.
           </span>
@@ -50,7 +50,7 @@ export function NoMatch() {
           className="btn btn-sec"
           onClick={() => {
             dismissNoMatch();
-            toast("We'll be here at prime time 🌙");
+            toast("We'll be here at prime time.");
           }}
         >
           Come back at prime time

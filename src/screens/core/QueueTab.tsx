@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutGroup, motion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
 import { bloomWave, tapPoint } from "../../components/ColorWave";
+import { Icon } from "../../components/icons";
 import { press } from "../../lib/motion";
 import { demoDefaults } from "../../data/seedData";
 import {
@@ -147,7 +148,7 @@ function QueueHome() {
       <motion.div className="px-6 pb-4 flex flex-col gap-2.5" {...settle(1.0)}>
         <motion.button
           {...press}
-          className="btn btn-pri"
+          className="btn btn-pri inline-flex items-center justify-center gap-2"
           style={partner ? { opacity: 0.55, boxShadow: "none" } : undefined}
           onClick={(e) => {
             if (partner) {
@@ -162,14 +163,16 @@ function QueueHome() {
             });
           }}
         >
-          {partner ? "🔒 Enter the queue" : "Enter the queue"}
+          {partner && <Icon name="lock" size={16} color="#fff" />}
+          Enter the queue
         </motion.button>
         {!backgroundSearching && (
           <button
-            className="btn btn-sec !py-3 !text-[14px]"
+            className="btn btn-sec !py-3 !text-[14px] inline-flex items-center justify-center gap-2"
             onClick={() => (isPlus ? enterQueue(true) : navigate("/plus"))}
           >
-            🌙 Background queue
+            <Icon name="moon" size={16} color="var(--iso-text-2)" />
+            Background queue
             <span
               className="text-[10px] font-bold px-2 py-0.5 rounded-pill"
               style={{ background: "var(--iso-accent-tint)", color: "#8A4A12" }}

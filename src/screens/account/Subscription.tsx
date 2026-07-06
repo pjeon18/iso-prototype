@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Icon } from "../../components/icons";
 import { useIsoStore } from "../../store/useIsoStore";
 import { SubScreen } from "./ProfileHub";
 
@@ -13,7 +14,7 @@ export function Subscription() {
       {isPlus ? (
         <>
           <div className="card p-5 text-center">
-            <span className="text-[26px]">✨</span>
+            <div className="flex justify-center"><Icon name="sparkle" size={24} color="var(--iso-accent)" /></div>
             <p className="font-display font-semibold text-[17px] text-ink mt-1.5">ISO+ · active</p>
             <p className="text-[12.5px] text-ink3 mt-1">$14.99/mo · renews on the 1st (demo)</p>
           </div>

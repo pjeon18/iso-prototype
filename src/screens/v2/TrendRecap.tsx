@@ -1,16 +1,9 @@
 import { useMemo, useState } from "react";
 import { seedInsights } from "../../data/seedData";
+import { Icon, FeelScale } from "../../components/icons";
 import { DAY, daysAgoLabel } from "../../lib/time";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 import { SubScreen } from "../account/ProfileHub";
-
-const FACES = [
-  { v: 1, e: "😕" },
-  { v: 2, e: "😐" },
-  { v: 3, e: "🙂" },
-  { v: 4, e: "😊" },
-  { v: 5, e: "🤩" },
-];
 
 /**
  * Screen 30 — personal trend + one insight + the weekly Connection Recap,
@@ -76,7 +69,7 @@ export function TrendRecap() {
         {scored.length === 0 ? (
           // zero-history: encouraging, floor-bounded — never reads as a crash (§8)
           <div className="py-6 text-center">
-            <span className="text-[24px]">🌱</span>
+            <div className="flex justify-center"><Icon name="sprout" size={26} color="var(--iso-accent-soft)" /></div>
             <p className="text-[13px] text-ink2 mt-2 font-medium">Your story starts now.</p>
             <p className="text-[11.5px] text-ink3 mt-1 max-w-[230px] mx-auto">
               After your first conversation, a gentle line begins here. It
@@ -135,8 +128,12 @@ export function TrendRecap() {
             : `${weekRecords.length} real conversation${weekRecords.length > 1 ? "s" : ""} this week.`}
         </p>
         <div className="flex gap-4 mt-3 text-[12.5px]">
-          <span>🧡 {mutuals} mutual</span>
-          <span>☕️ {datesMet} real date{datesMet === 1 ? "" : "s"} recorded</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Icon name="heartFill" size={14} color="#fff" /> {mutuals} mutual
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Icon name="coffee" size={14} color="#fff" /> {datesMet} real date{datesMet === 1 ? "" : "s"} recorded
+          </span>
         </div>
 
         {weekUnscored.length > 0 && !recapDone ? (
@@ -145,19 +142,11 @@ export function TrendRecap() {
               One calm moment: how did these feel? (skip freely)
             </p>
             {weekUnscored.map((r) => (
-              <div key={r.id} className="flex items-center gap-2 mt-2.5">
+              <div key={r.id} className="flex items-center gap-2 mt-3">
                 <span className="text-[12px] flex-1 opacity-95">
                   {personaById(r.personaId).name} · {daysAgoLabel(nowMs, r.endedAt)}
                 </span>
-                {FACES.map((f) => (
-                  <button
-                    key={f.v}
-                    className="border-none bg-transparent cursor-pointer text-[17px] p-0 hover:scale-110 transition-transform"
-                    onClick={() => reflectRecord(r.id, f.v, [])}
-                  >
-                    {f.e}
-                  </button>
-                ))}
+                <FeelScale compact light onPick={(v) => reflectRecord(r.id, v, [])} />
               </div>
             ))}
             <button
@@ -169,7 +158,7 @@ export function TrendRecap() {
           </div>
         ) : (
           <p className="text-[12px] mt-3 opacity-90">
-            {weekRecords.length > 0 ? "All reflected — nothing to grade, nothing to grind. ✨" : ""}
+            {weekRecords.length > 0 ? "All reflected — nothing to grade, nothing to grind." : ""}
           </p>
         )}
       </div>

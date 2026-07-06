@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Avatar } from "../../components/Avatar";
+import { Icon } from "../../components/icons";
 import { springs, staggerDelay } from "../../lib/motion";
 import { daysAgoLabel } from "../../lib/time";
 import {
@@ -12,7 +13,7 @@ import {
 import { SubScreen } from "../account/ProfileHub";
 
 const OUTCOME_LABEL: Record<string, string> = {
-  met: "you met up 🎉",
+  met: "you met up",
   not_yet: "not yet",
   no: "didn't meet",
   none: "",
@@ -42,7 +43,7 @@ export function Memories() {
 
       {!isPlus ? (
         <div className="card p-5 text-center">
-          <span className="text-[26px]">🕰️</span>
+          <div className="flex justify-center"><Icon name="clock" size={26} color="var(--iso-accent)" /></div>
           <p className="text-[14px] font-semibold text-ink mt-2">Memories is part of ISO+</p>
           <p className="text-[12px] text-ink3 mt-1.5 leading-relaxed">
             Look back on the conversations that mattered. Convenience only —
@@ -151,9 +152,13 @@ function MemoryEntry({
           </div>
 
           {(r.satisfaction !== null || r.tags.length > 0) && (
-            <p className="text-[11.5px] text-ink3 mt-3">
-              Your private reflection: {r.satisfaction !== null && "🧡".repeat(r.satisfaction)}
-              {r.tags.length > 0 && ` · ${r.tags.join(", ")}`}
+            <p className="text-[11.5px] text-ink3 mt-3 flex items-center gap-1 flex-wrap">
+              Your private reflection:
+              {r.satisfaction !== null &&
+                Array.from({ length: r.satisfaction }).map((_, k) => (
+                  <Icon key={k} name="heartFill" size={12} color="var(--iso-green)" />
+                ))}
+              {r.tags.length > 0 && <span>· {r.tags.join(", ")}</span>}
             </p>
           )}
 

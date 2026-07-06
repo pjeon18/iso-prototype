@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { StatusBar } from "../../components/PhoneFrame";
 import { Avatar, MeAvatar } from "../../components/Avatar";
 import { bloomWave, tapPoint } from "../../components/ColorWave";
+import { Icon } from "../../components/icons";
 import { press, springs } from "../../lib/motion";
 import { personaById, useIsoStore } from "../../store/useIsoStore";
 
@@ -72,7 +73,7 @@ export function KeepTalking() {
             committed={kt.me !== null}
             revealed={kt.revealed}
             saidYes={kt.me === true}
-            waitingText={kt.me === null ? "deciding…" : "locked in ✓"}
+            waitingText={kt.me === null ? "deciding…" : "locked in"}
           />
           <RevealCard
             label={persona.name}
@@ -96,7 +97,7 @@ export function KeepTalking() {
                 transition={{ ...springs.soft, delay: 0.75 }}
               >
                 {mutual
-                  ? "It's mutual — you both said yes 🎉"
+                  ? "It's mutual — you both said yes"
                   : "Not this time. Closed kindly, nothing left behind."}
               </motion.p>
             )}
@@ -188,7 +189,7 @@ function RevealCard({
         >
           {avatar}
           <span className="text-[12px] font-semibold text-ink2">{label}</span>
-          <span className="text-[11px] text-ink3">{committed && !revealed ? "locked in ✓" : waitingText}</span>
+          <span className="text-[11px] text-ink3">{committed && !revealed ? "locked in" : waitingText}</span>
         </div>
         {/* revealed face */}
         <div
@@ -200,7 +201,7 @@ function RevealCard({
             borderColor: saidYes ? "rgba(32,197,94,0.35)" : undefined,
           }}
         >
-          <span className="text-[22px]">{saidYes ? "🧡" : "🌿"}</span>
+          <Icon name={saidYes ? "heartFill" : "leaf"} size={22} color={saidYes ? "var(--iso-green)" : "var(--iso-text-3)"} />
           <span className="text-[12px] font-semibold text-ink2">{label}</span>
           <span
             className="text-[11.5px] font-semibold"
