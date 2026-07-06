@@ -52,7 +52,7 @@ function title(slide, text, opts = {}) {
 }
 
 const bullet = (text, opts = {}) => ({
-  text, options: { bullet: { code: "2022", indent: 14 }, breakLine: true, paraSpaceAfter: 10, ...opts },
+  text, options: { bullet: { code: "2022", indent: 14 }, breakLine: true, paraSpaceAfter: 15, ...opts },
 });
 
 // ---------------------------------------------------------------- 1 · title
@@ -84,7 +84,7 @@ const bullet = (text, opts = {}) => ({
     bullet("Users end up managing a roster of lukewarm “talking stages” — a part-time job nobody signed up for."),
     bullet("Ghosting is normalized. Everyone feels disposable. Burnout drives people off the apps entirely."),
     bullet("The incumbent business model can't fix this — optionality is the revenue.", { paraSpaceAfter: 0 }),
-  ], { x: 0.75, y: 1.75, w: 6.1, h: 4.4, fontFace: BODY, fontSize: 17, color: INK2, valign: "top" });
+  ], { x: 0.75, y: 1.95, w: 6.1, h: 4.6, fontFace: BODY, fontSize: 17.5, color: INK2, valign: "top" });
 
   const stats = [
     ["79%", "of U.S. college students aren't on any dating app"],
@@ -100,7 +100,7 @@ const bullet = (text, opts = {}) => ({
     s.addText(label, { x: 9.5, y: y + 0.18, w: 2.95, h: 1.14, fontFace: BODY, fontSize: 13, color: INK3, valign: "middle" });
   });
   s.addText("Sources: Axios · Forbes Health 2025 · Kinsey / DatingAdvice", {
-    x: 7.35, y: 6.85, w: 5.2, h: 0.3, fontFace: BODY, fontSize: 9.5, color: "A98F70", align: "right",
+    x: 7.35, y: 6.85, w: 5.2, h: 0.3, fontFace: BODY, fontSize: 9.5, color: "8A7460", align: "right",
   });
   s.addNotes("The category's symptoms — rosters, ghosting, burnout — are downstream of a business model that sells optionality. That's the opening.");
 }
@@ -109,8 +109,8 @@ const bullet = (text, opts = {}) => ({
 {
   const s = pres.addSlide();
   s.background = { color: "FFFFFF" };
-  s.addText("One conversation at a time.", { x: 0.75, y: 1.15, w: 7.3, h: 0.8, fontFace: HEAD, fontSize: 40, bold: true, color: INK });
-  s.addText("Enforced.", { x: 0.75, y: 1.95, w: 7.3, h: 0.8, fontFace: HEAD, fontSize: 40, bold: true, color: ACCENT });
+  s.addText("One conversation at a time.", { x: 0.75, y: 1.0, w: 8.6, h: 0.75, fontFace: HEAD, fontSize: 36, bold: true, color: INK });
+  s.addText("Enforced.", { x: 0.75, y: 1.95, w: 8.6, h: 0.75, fontFace: HEAD, fontSize: 36, bold: true, color: ACCENT });
   s.addText([
     bullet("Queue like joining a game. Get matched live with one present person. Talk in a real-time room."),
     bullet("It only continues if both of you say yes — otherwise it closes kindly and you're back in the queue."),
@@ -244,9 +244,9 @@ const bullet = (text, opts = {}) => ({
     bullet("Loud thresholds, calm baseline — a color wave blooms from your fingertip at exactly five moments (enter queue, match, mutual yes, “we met,” clean close). Everything else stays quiet."),
     bullet("Slow arrivals, instant feedback — screens settle in reading order like walking into a room; every press answers in under 120ms."),
     bullet("Warm, round, unhurried — cream surfaces, pill buttons, springs with barely any bounce. Celebration is one green wave, never confetti."),
-  ], { x: 0.78, y: 3.7, w: 7.0, h: 3.3, fontFace: BODY, fontSize: 15, color: INK2, valign: "top" });
-  phone(s, "01-splash.png", 8.5, 0.85, 5.9);
-  phone(s, "09-profile-bento.png", 11.05, 0.85, 5.9);
+  ], { x: 0.78, y: 3.7, w: 7.35, h: 3.4, fontFace: BODY, fontSize: 15, color: INK2, valign: "top" });
+  phone(s, "01-splash.png", 8.55, 1.65, 4.6);
+  phone(s, "09-profile-bento.png", 10.85, 1.65, 4.6);
   s.addNotes("The motion system is tokenized — four named springs, five wave registers — so the app feels crafted, not generated. Full rationale lives in the design document.");
 }
 
@@ -257,7 +257,7 @@ const bullet = (text, opts = {}) => ({
   s.addImage({ path: A("iso-mark-white.png"), x: 5.44, y: 1.05, w: 2.45, h: 1.41 });
   s.addText("Try it yourself", { x: 2.65, y: 2.75, w: 8, h: 0.75, align: "center", fontFace: HEAD, fontSize: 34, bold: true, color: "FFFFFF" });
   const rows = [
-    ["Live demo", "the interactive prototype runs in any browser — phone-sized, no install"],
+    ["Live demo", "pjeon18.github.io/iso-prototype — runs in any browser, no install"],
     ["Source + docs", "github.com/pjeon18/iso-prototype — PRD, build spec, design document, validation"],
     ["Demo controls", "add ?debug to the URL: force matches, pick personas, trigger revival, skip onboarding"],
   ];
